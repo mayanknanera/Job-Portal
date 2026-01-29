@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Available Jobs - Career Plus{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+    <ul>
+        <li class="current">All Jobs</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Available Jobs</h1>
+
+<style>
+    .search-form {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .search-form form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-end;
+    }
+    .search-form input,
+    .search-form select {
+        flex: 1;
+        min-width: 150px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+    }
+    .search-form button,
+    .search-form a {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+    }
+    .search-form button {
+        background-color: #3b82f6;
+        color: white;
+        transition: background-color 0.2s;
+    }
+    .search-form button:hover {
+        background-color: #2563eb;
+    }
+    .search-form a {
+        background-color: #e2e8f0;
+        color: #475569;
+        transition: background-color 0.2s;
+    }
+    .search-form a:hover {
+        background-color: #cbd5e1;
+    }
+    .job-card { 
+        background: white; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 0.5rem; 
+        padding: 1.5rem; 
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .job-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
+    }
+    .job-title { 
+        color: #1e293b; 
+        font-size: 1.25rem; 
+        font-weight: 600; 
+        margin-bottom: 0.5rem;
+    }
+    .job-company { 
+        color: #3b82f6; 
+        font-weight: 600; 
+        margin-bottom: 0.75rem;
+    }
+    .job-meta { 
+        color: #64748b; 
+        font-size: 0.875rem; 
+        display: flex; 
+        gap: 1.5rem; 
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    .job-description {
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    .job-actions { 
+        display: flex; 
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .apply-btn {
+        background-color: #10b981;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .apply-btn:hover {
+        background-color: #059669;
+    }
+    .applied-btn {
+        background-color: #e2e8f0;
+        color: #64748b;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        border: 1px solid #cbd5e1;
+        cursor: not-allowed;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: #64748b;
+    }
+</style>
+
+{% if page_obj %}
+<div class="search-form">
+    <h2>Search Jobs</h2>
+    <form method="get">
+        <input type="text" name="keyword" placeholder="Job title or keyword"
+               value="{{ request.GET.keyword }}">
+
+        <input type="text" name="location" placeholder="Location"
+               value="{{ request.GET.location }}">
+
+        <input type="text" name="skill" placeholder="Skill (Python, Django)"
+               value="{{ request.GET.skill }}">
+
+        <select name="experience">
+            <option value="">Experience</option>
+            <option value="0" {% if request.GET.experience == '0' %}selected{% endif %}>Fresher</option>
+            <option value="1" {% if request.GET.experience == '1' %}selected{% endif %}>1+ year</option>
+            <option value="3" {% if request.GET.experience == '3' %}selected{% endif %}>3+ years</option>
+            <option value="5" {% if request.GET.experience == '5' %}selected{% endif %}>5+ years</option>
+        </select>
+
+        <button type="submit">Search</button>
+        <a href="{% url 'job_list' %}">Clear</a>
+    </form>
+</div>
+
+<h2>Available Jobs</h2>
+
+<div>
+    {% for job in page_obj %}
+        <div class="job-card">
+            <div class="job-title">
+                <a href="{% url 'job_detail' job.slug %}" style="text-decoration: none; color: #1e293b;">
+                    <strong>{{ job.title }}</strong>
+                </a>
+            </div>
+            <div class="job-company">{{ job.employer.company_name }}</div>
+            <div class="job-meta">
+                <span>📍 {{ job.location }}</span>
+                <span>💼 {{ job.skills_required }}</span>
+                <span>📅 {{ job.experience_required }} years exp</span>
+            </div>
+            
+            {% if job.description %}
+                <div class="job-description">
+                    {{ job.description|truncatewords:50 }}
+                </div>
+            {% endif %}
+
+            <div class="job-actions">
+                {% if user.role == "JOB_SEEKER" %}
+                    {% if job.id in applied_job_ids %}
+                        <button class="applied-btn" disabled>✓ Already Applied</button>
+                    {% else %}
+                        <a href="{% url 'apply_job' job.id %}" class="apply-btn">Apply Now</a>
+                    {% endif %}
+                {% elif user.role == "EMPLOYER" %}
+                    {% if job.employer.user.id == user.id %}
+                        <a href="{% url 'view_applicants' job.id %}" class="apply-btn" style="background-color: #6366f1;">View Applicants</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="apply-btn">Login to Apply</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div style="text-align: center; margin-top: 2rem; padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" style="background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; margin-right: 1rem;">← Previous</a>
+    {% endif %}
+
+    <span style="margin: 0 1rem; color: #475569; font-weight: 600;">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" style="background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; margin-left: 1rem;">Next →</a>
+    {% endif %}
+</div>
+{% else %}
+    <div class="empty-state">
+        <h2 style="color: #1e293b; margin-bottom: 1rem;">No jobs available</h2>
+        <p>Check back soon for new opportunities!</p>
+        {% if not user.is_authenticated %}
+            <p style="margin-top: 1rem;">
+                <a href="{% url 'signup' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Sign up</a> to get notified about new jobs.
+            </p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

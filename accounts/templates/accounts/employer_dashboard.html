@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Employer{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+    <ul>
+        <li><a href="{% url 'job_list' %}">Jobs</a></li>
+        <li class="current">Dashboard</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ profile.company_name }}</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Company Information</h2>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Email</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.user.email }}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Website</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.website|default:"—" }}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Location</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.location|default:"—" }}</p>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 1rem;">Quick Actions</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="#" style="background-color: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">✏️ Edit Profile</a>
+            <a href="{% url 'post_job' %}" style="background-color: #10b981; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">➕ Post New Job</a>
+            <a href="{% url 'job_list' %}" style="background-color: #6366f1; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">📊 View Active Jobs</a>
+        </div>
+    </div>
+</div>
+
+<div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+    <h2 style="margin-bottom: 1rem;">👥 Recent Applicants</h2>
+    <p style="color: #64748b; margin-bottom: 1rem;">View and manage job applicants for your posted positions.</p>
+    <a href="#" style="display: inline-block; background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: background-color 0.2s;">View All Applicants →</a>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Career Plus{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+    <ul>
+        <li><a href="{% url 'job_list' %}">Home</a></li>
+        <li class="current">Sign Up</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Create Your Account</h1>
+
+<div style="max-width: 500px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_email" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Email</label>
+            {{ form.email }}
+        </div>
+
+        <div>
+            <label for="id_role" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Account Type</label>
+            {{ form.role }}
+        </div>
+
+        <div id="company-field" style="display: none;">
+            <label for="id_company_name" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Company Name</label>
+            {{ form.company_name }}
+        </div>
+
+        <div>
+            <label for="id_password1" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Password</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;">
+                    {% for error in form.password1.errors %}
+                        <p style="margin: 0.25rem 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="id_password2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Confirm Password</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;">
+                    {% for error in form.password2.errors %}
+                        <p style="margin: 0.25rem 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+
+        {% if form.non_field_errors %}
+            <div style="background-color: #fee2e2; color: #991b1b; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #fecaca;">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit" style="background-color: #3b82f6; color: white; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+            Register
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; color: #64748b;">
+        Already have an account? <a href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Login here</a>
+    </p>
+</div>
+
+<style>
+    form input, form select { 
+        width: 100%; 
+        padding: 0.75rem; 
+        border: 1px solid #cbd5e1; 
+        border-radius: 0.375rem; 
+        font-size: 1rem;
+        background-color: #f8fafc;
+    }
+    form input:focus, form select:focus { 
+        outline: none;
+        border-color: #3b82f6;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+</style>
+
+<script>
+    const roleSelect = document.getElementById("id_role");
+    const companyField = document.getElementById("company-field");
+
+    function toggleCompanyField() {
+        if (roleSelect.value === "EMPLOYER") {
+            companyField.style.display = "block";
+        } else {
+            companyField.style.display = "none";
+        }
+    }
+
+    roleSelect.addEventListener("change", toggleCompanyField);
+    window.onload = toggleCompanyField;
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Job Seeker{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+    <ul>
+        <li><a href="{% url 'job_list' %}">Jobs</a></li>
+        <li class="current">Dashboard</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ profile.full_name }}</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Profile Information</h2>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Email</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.user.email }}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Experience</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.experience }} years</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Skills</p>
+            <p style="font-weight: 600; color: #1e293b;">{{ profile.skills }}</p>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 1rem;">Quick Actions</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="#" style="background-color: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">✏️ Edit Profile</a>
+            <a href="#" style="background-color: #6366f1; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">📄 Upload Resume</a>
+            <a href="{% url 'job_list' %}" style="background-color: #10b981; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">🔍 Browse Jobs</a>
+        </div>
+    </div>
+</div>
+
+<div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+    <h2 style="margin-bottom: 1rem;">📋 Your Applications</h2>
+    <p style="color: #64748b; margin-bottom: 1rem;">View all your job applications and their status.</p>
+    <a href="{% url 'applied_jobs' %}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: background-color 0.2s;">View All Applications →</a>
+</div>
+{% endblock %}
