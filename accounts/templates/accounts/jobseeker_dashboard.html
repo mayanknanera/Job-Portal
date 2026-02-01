@@ -1,49 +1,146 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Job Seeker{% endblock %}
+{% block title %}Dashboard | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Jobs</a></li>
-        <li class="current">Dashboard</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li>
+            <a href="{% url 'home' %}" class="hover:text-cyan-400 transition-colors">
+                Home
+            </a>
+        </li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold">Dashboard</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<h1>Welcome, {{ profile.full_name }}</h1>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Profile Information</h2>
-        <div style="margin-bottom: 1rem;">
-            <p style="color: #64748b; margin-bottom: 0.25rem;">Email</p>
-            <p style="font-weight: 600; color: #1e293b;">{{ profile.user.email }}</p>
+<!-- ================= HEADER ================= -->
+<div class="mb-10">
+    <h1 class="text-4xl font-bold text-white">
+        Welcome,
+        <span class="text-cyan-400">
+            {{ profile.full_name }}
+        </span> 👋
+    </h1>
+    <p class="text-slate-400 mt-2 italic">
+        Your career journey is looking bright today.
+    </p>
+</div>
+
+<!-- ================= GRID ================= -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- ================= PROFILE INFO ================= -->
+    <div class="glass p-8 rounded-2xl col-span-1 lg:col-span-2">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-cyan-400">
+                Profile Information
+            </h2>
+            <span class="px-4 py-1 text-xs rounded-full bg-cyan-500/10 text-cyan-300">
+                Active Seeker
+            </span>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <p style="color: #64748b; margin-bottom: 0.25rem;">Experience</p>
-            <p style="font-weight: 600; color: #1e293b;">{{ profile.experience }} years</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <p style="color: #64748b; margin-bottom: 0.25rem;">Skills</p>
-            <p style="font-weight: 600; color: #1e293b;">{{ profile.skills }}</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- LEFT -->
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs uppercase text-slate-400 mb-1">Email</p>
+                    <p class="text-white font-semibold">
+                        {{ profile.user.email }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs uppercase text-slate-400 mb-1">
+                        Experience
+                    </p>
+                    <p class="text-white font-semibold">
+                        {{ profile.experience }} Years
+                    </p>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div>
+                <p class="text-xs uppercase text-slate-400 mb-3">
+                    Key Skills
+                </p>
+
+                <!-- ✅ SAFE LOOP -->
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in skills_list %}
+                    <span class="px-4 py-1 text-sm rounded-full glass">
+                        {{ skill }}
+                    </span>
+                    {% empty %}
+                    <span class="text-slate-500 text-sm italic">
+                        No skills added yet
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-        <h2 style="font-size: 0.875rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 1rem;">Quick Actions</h2>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <a href="#" style="background-color: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">✏️ Edit Profile</a>
-            <a href="#" style="background-color: #6366f1; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">📄 Upload Resume</a>
-            <a href="{% url 'job_list' %}" style="background-color: #10b981; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; text-align: center; transition: background-color 0.2s;">🔍 Browse Jobs</a>
+    <!-- ================= QUICK ACTIONS ================= -->
+    <div class="glass p-8 rounded-2xl">
+
+        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
+            Quick Actions
+        </h2>
+
+        <div class="flex flex-col gap-4">
+
+            <a href="{% url 'edit_profile' %}"
+                class="py-3 rounded-xl bg-slate-800/60 text-center text-slate-300 font-semibold hover:bg-slate-700">
+                ✏️ Edit Profile
+            </a>
+
+            <a href="#"
+                class="py-3 rounded-xl bg-indigo-500/10 text-center text-indigo-300 font-semibold hover:bg-indigo-500/20">
+                📄 Upload Resume
+            </a>
+
+            <a href="{% url 'job_list' %}"
+                class="py-3 rounded-xl bg-cyan-600 text-center text-white font-semibold hover:bg-cyan-500">
+                🔍 Browse Jobs
+            </a>
+
         </div>
     </div>
+
+    <!-- ================= APPLICATIONS ================= -->
+    <div class="glass p-8 rounded-2xl col-span-1 lg:col-span-3">
+
+        <div class="flex justify-between items-center flex-wrap gap-6">
+
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-2">
+                    📋 Your Applications
+                </h2>
+                <p class="text-slate-400 text-sm">
+                    Track your applied jobs and employer responses.
+                </p>
+            </div>
+
+            <a href="{% url 'applied_jobs' %}"
+                class="px-6 py-3 rounded-xl bg-emerald-500/10 text-emerald-400 font-semibold hover:bg-emerald-500/20">
+                View All Applications →
+            </a>
+
+        </div>
+    </div>
+
 </div>
 
-<div style="background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-    <h2 style="margin-bottom: 1rem;">📋 Your Applications</h2>
-    <p style="color: #64748b; margin-bottom: 1rem;">View all your job applications and their status.</p>
-    <a href="{% url 'applied_jobs' %}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: background-color 0.2s;">View All Applications →</a>
-</div>
 {% endblock %}

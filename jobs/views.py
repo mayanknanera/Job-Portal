@@ -1,18 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Job, JobApplication
-from django import forms
+from .forms import JobForm
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from accounts.decorators import role_required
-from django.shortcuts import render, get_object_or_404
-
-# Job Post Form
-class JobForm(forms.ModelForm):
-    class Meta:
-        model = Job
-        fields = ['title', 'description', 'location', 'skills_required', 'experience_required', 'salary']
 
 @login_required
 @role_required('EMPLOYER')

@@ -1,205 +1,129 @@
 {% extends "base.html" %}
 
-{% block title %}{{ job.title }} - Career Plus{% endblock %}
+{% block title %}{{ job.title }} | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Jobs</a></li>
-        <li class="current">{{ job.title }}</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <a href="{% url 'job_list' %}" class="hover:text-cyan-400 transition">Jobs</a>
+        </li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold italic">{{ job.title }}</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<style>
-    .job-detail-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-    
-    .job-detail-header {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    
-    .job-detail-title {
-        color: #1e293b;
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    
-    .job-detail-company {
-        color: #3b82f6;
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-    }
-    
-    .job-meta-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .meta-item {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .meta-label {
-        color: #64748b;
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-    }
-    
-    .meta-value {
-        color: #1e293b;
-        font-size: 1rem;
-        font-weight: 500;
-    }
-    
-    .job-description-section {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    
-    .section-title {
-        color: #1e293b;
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .description-text {
-        color: #475569;
-        line-height: 1.8;
-        font-size: 1rem;
-        white-space: pre-wrap;
-    }
-    
-    .job-actions-section {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    
-    .apply-btn {
-        background-color: #10b981;
-        color: white;
-        padding: 0.75rem 2rem;
-        text-decoration: none;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.2s;
-    }
-    
-    .apply-btn:hover {
-        background-color: #059669;
-    }
-    
-    .applied-btn {
-        background-color: #e2e8f0;
-        color: #64748b;
-        padding: 0.75rem 2rem;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        border: 1px solid #cbd5e1;
-        cursor: not-allowed;
-        font-size: 1rem;
-    }
-    
-    .back-link {
-        display: inline-block;
-        margin-bottom: 2rem;
-        color: #3b82f6;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.2s;
-    }
-    
-    .back-link:hover {
-        color: #2563eb;
-    }
+<div class="max-w-5xl mx-auto py-8">
+    <a href="{% url 'job_list' %}" class="group inline-flex items-center gap-2 text-slate-400 hover:text-cyan-400 font-semibold mb-8 transition-all">
+        <span class="transition-transform group-hover:-translate-x-1">←</span> Back to All Jobs
+    </a>
 
-    .salary-badge {
-        background-color: #dcfce7;
-        color: #166534;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-weight: 600;
-    }
-</style>
-
-<div class="job-detail-container">
-    <a href="{% url 'job_list' %}" class="back-link">← Back to Jobs</a>
-    
-    <div class="job-detail-header">
-        <h1 class="job-detail-title">{{ job.title }}</h1>
-        <div class="job-detail-company">{{ job.employer.company_name }}</div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div class="job-meta-grid">
-            <div class="meta-item">
-                <div class="meta-label">📍 Location</div>
-                <div class="meta-value">{{ job.location }}</div>
+        <div class="lg:col-span-2 space-y-8">
+            <div class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-bl-full pointer-events-none"></div>
+
+                <div class="relative">
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-widest rounded-lg">Verified Role</span>
+                        <span class="text-slate-400 text-xs font-medium">Posted {{ job.created_at|timesince }} ago</span>
+                    </div>
+
+                    <h1 class="text-4xl md:text-5xl font-bold font-outfit text-white leading-tight mb-4 text-glow">
+                        {{ job.title }}
+                    </h1>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl font-bold text-cyan-400">
+                            {{ job.employer.company_name|slice:":1" }}
+                        </div>
+                        <div>
+                            <p class="text-xl font-bold text-slate-200">{{ job.employer.company_name }}</p>
+                            <p class="text-slate-400 text-sm font-medium">📍 {{ job.location }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="meta-item">
-                <div class="meta-label">💼 Skills Required</div>
-                <div class="meta-value">{{ job.skills_required }}</div>
+
+            <div class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="p-2 bg-slate-800 text-cyan-400 rounded-xl border border-slate-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white font-outfit">Role Description</h2>
+                </div>
+                
+                <div class="description-text text-slate-300 leading-relaxed text-lg whitespace-pre-wrap">
+                    {{ job.description }}
+                </div>
             </div>
-            
-            <div class="meta-item">
-                <div class="meta-label">📅 Experience</div>
-                <div class="meta-value">{{ job.experience_required }} years</div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="glass p-8 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 sticky top-24">
+                <div class="mb-8">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Compensation</p>
+                    <p class="text-3xl font-bold text-white font-outfit">
+                        {% if job.salary %}₹{{ job.salary }}{% else %}Competitive{% endif %}
+                    </p>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Estimated monthly package</p>
+                </div>
+
+                <div class="space-y-6 mb-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">📅</span>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Experience</p>
+                            <p class="font-semibold text-slate-200">{{ job.experience_required }} Years Required</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">🛠️</span>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Technical Skills</p>
+                            <div class="flex flex-wrap gap-2">
+                                {% for skill in job.skills_required.split %}
+                                    <span class="px-3 py-1 bg-slate-800/50 border border-slate-700 text-cyan-400 text-[11px] font-bold rounded-lg shadow-sm">
+                                        {{ skill|cut:"," }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.role == "JOB_SEEKER" %}
+                    {% if applied %}
+                        <div class="w-full bg-emerald-900/20 text-emerald-400 py-4 rounded-2xl font-bold border border-emerald-500/30 flex items-center justify-center gap-2 shadow-sm">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+                            Application Sent
+                        </div>
+                    {% else %}
+                        <a href="{% url 'apply_job' job.id %}" class="block w-full text-center bg-cyan-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 hover:-translate-y-1 transition-all active:scale-95">
+                            Apply Now
+                        </a>
+                    {% endif %}
+                {% elif not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="block w-full text-center bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 border border-slate-700 transition-all">
+                        Login to Apply
+                    </a>
+                {% endif %}
             </div>
-            
-            {% if job.salary %}
-            <div class="meta-item">
-                <div class="meta-label">💰 Salary</div>
-                <div class="meta-value salary-badge">₹{{ job.salary }}</div>
+
+            <div class="glass p-8 rounded-[2rem] border border-white/10 shadow-sm">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">About the Company</h3>
+                <p class="text-slate-300 font-medium leading-relaxed italic">
+                    {{ job.employer.company_description|default:"A forward-thinking organization looking for exceptional talent to join their growing team." }}
+                </p>
             </div>
-            {% endif %}
         </div>
     </div>
-    
-    <div class="job-description-section">
-        <h2 class="section-title">Job Description</h2>
-        <div class="description-text">{{ job.description }}</div>
-    </div>
-    
-    <div class="job-actions-section">
-        {% if applied %}
-            <button class="applied-btn" disabled>✓ Already Applied</button>
-        {% else %}
-            <a href="{% url 'apply_job' job.id %}" class="apply-btn">Apply Now</a>
-        {% endif %}
-        
-        <a href="{% url 'job_list' %}" class="apply-btn" style="background-color: #6b7280; text-decoration: none;">View Other Jobs</a>
-    </div>
 </div>
-
 {% endblock %}

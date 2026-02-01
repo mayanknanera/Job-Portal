@@ -1,228 +1,175 @@
 {% extends "base.html" %}
 
-{% block title %}Available Jobs - Career Plus{% endblock %}
+{% block title %}Explore Careers | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li class="current">All Jobs</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold font-outfit uppercase tracking-wider text-xs">All
+                Opportunities</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<h1>Available Jobs</h1>
+<div class="mb-10 relative">
+    <h1 class="text-4xl md:text-5xl font-bold font-outfit text-white tracking-tight">Find Your <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 text-glow">Next Step</span>
+    </h1>
+    <p class="text-slate-400 mt-2 text-lg">Browse through thousands of high-impact roles from top companies.</p>
+</div>
 
-<style>
-    .search-form {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    .search-form form {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        align-items: flex-end;
-    }
-    .search-form input,
-    .search-form select {
-        flex: 1;
-        min-width: 150px;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-    }
-    .search-form button,
-    .search-form a {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        border: none;
-    }
-    .search-form button {
-        background-color: #3b82f6;
-        color: white;
-        transition: background-color 0.2s;
-    }
-    .search-form button:hover {
-        background-color: #2563eb;
-    }
-    .search-form a {
-        background-color: #e2e8f0;
-        color: #475569;
-        transition: background-color 0.2s;
-    }
-    .search-form a:hover {
-        background-color: #cbd5e1;
-    }
-    .job-card { 
-        background: white; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 0.5rem; 
-        padding: 1.5rem; 
-        margin-bottom: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: box-shadow 0.2s, border-color 0.2s;
-    }
-    .job-card:hover {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-color: #cbd5e1;
-    }
-    .job-title { 
-        color: #1e293b; 
-        font-size: 1.25rem; 
-        font-weight: 600; 
-        margin-bottom: 0.5rem;
-    }
-    .job-company { 
-        color: #3b82f6; 
-        font-weight: 600; 
-        margin-bottom: 0.75rem;
-    }
-    .job-meta { 
-        color: #64748b; 
-        font-size: 0.875rem; 
-        display: flex; 
-        gap: 1.5rem; 
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-    }
-    .job-description {
-        color: #475569;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-    .job-actions { 
-        display: flex; 
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .apply-btn {
-        background-color: #10b981;
-        color: white;
-        padding: 0.5rem 1.5rem;
-        text-decoration: none;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .apply-btn:hover {
-        background-color: #059669;
-    }
-    .applied-btn {
-        background-color: #e2e8f0;
-        color: #64748b;
-        padding: 0.5rem 1.5rem;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        border: 1px solid #cbd5e1;
-        cursor: not-allowed;
-    }
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1.5rem;
-        color: #64748b;
-    }
-</style>
+<div class="glass p-6 md:p-8 rounded-[2rem] mb-12 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
+    <form method="get" class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+        <div class="space-y-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Keywords</label>
+            <input type="text" name="keyword" placeholder="Job title, role..." value="{{ request.GET.keyword }}"
+                class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all">
+        </div>
 
-{% if page_obj %}
-<div class="search-form">
-    <h2>Search Jobs</h2>
-    <form method="get">
-        <input type="text" name="keyword" placeholder="Job title or keyword"
-               value="{{ request.GET.keyword }}">
+        <div class="space-y-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Location</label>
+            <input type="text" name="location" placeholder="City or Remote" value="{{ request.GET.location }}"
+                class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all">
+        </div>
 
-        <input type="text" name="location" placeholder="Location"
-               value="{{ request.GET.location }}">
+        <div class="space-y-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Skills</label>
+            <input type="text" name="skill" placeholder="e.g. Django" value="{{ request.GET.skill }}"
+                class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all">
+        </div>
 
-        <input type="text" name="skill" placeholder="Skill (Python, Django)"
-               value="{{ request.GET.skill }}">
+        <div class="space-y-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Experience</label>
+            <select name="experience"
+                class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all appearance-none">
+                <option value="" class="bg-slate-900">Any Experience</option>
+                <option value="0" {% if request.GET.experience=='0' %}selected{% endif %} class="bg-slate-900">Entry
+                    Level</option>
+                <option value="3" {% if request.GET.experience=='3' %}selected{% endif %} class="bg-slate-900">Mid Level
+                    (3+)</option>
+                <option value="5" {% if request.GET.experience=='5' %}selected{% endif %} class="bg-slate-900">Senior
+                    (5+)</option>
+            </select>
+        </div>
 
-        <select name="experience">
-            <option value="">Experience</option>
-            <option value="0" {% if request.GET.experience == '0' %}selected{% endif %}>Fresher</option>
-            <option value="1" {% if request.GET.experience == '1' %}selected{% endif %}>1+ year</option>
-            <option value="3" {% if request.GET.experience == '3' %}selected{% endif %}>3+ years</option>
-            <option value="5" {% if request.GET.experience == '5' %}selected{% endif %}>5+ years</option>
-        </select>
-
-        <button type="submit">Search</button>
-        <a href="{% url 'job_list' %}">Clear</a>
+        <div class="flex gap-2">
+            <button type="submit"
+                class="flex-1 bg-cyan-500 text-white font-bold py-3 rounded-xl hover:bg-cyan-400 transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95">
+                Filter
+            </button>
+            <a href="{% url 'job_list' %}"
+                class="px-4 py-3 bg-slate-800 text-slate-400 rounded-xl hover:bg-slate-700 hover:text-white transition-all flex items-center border border-slate-700/50">
+                ✕
+            </a>
+        </div>
     </form>
 </div>
 
-<h2>Available Jobs</h2>
-
-<div>
+<div class="space-y-6">
     {% for job in page_obj %}
-        <div class="job-card">
-            <div class="job-title">
-                <a href="{% url 'job_detail' job.slug %}" style="text-decoration: none; color: #1e293b;">
-                    <strong>{{ job.title }}</strong>
-                </a>
-            </div>
-            <div class="job-company">{{ job.employer.company_name }}</div>
-            <div class="job-meta">
-                <span>📍 {{ job.location }}</span>
-                <span>💼 {{ job.skills_required }}</span>
-                <span>📅 {{ job.experience_required }} years exp</span>
-            </div>
-            
-            {% if job.description %}
-                <div class="job-description">
-                    {{ job.description|truncatewords:50 }}
-                </div>
-            {% endif %}
+    <div
+        class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 hover:border-cyan-500/30 transition-all group relative overflow-hidden">
+        <div
+            class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-bl-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        </div>
 
-            <div class="job-actions">
-                {% if user.role == "JOB_SEEKER" %}
+        <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <span
+                        class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold uppercase tracking-wider rounded-md">New</span>
+                    <h2 class="text-2xl font-bold font-outfit text-white group-hover:text-cyan-400 transition-colors">
+                        <a href="{% url 'job_detail' job.slug %}">{{ job.title }}</a>
+                    </h2>
+                </div>
+                <p class="text-cyan-200/80 font-medium mb-4 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    {{ job.employer.company_name }}
+                </p>
+
+                <div class="flex flex-wrap gap-y-2 gap-x-6 text-sm text-slate-400 mb-6">
+                    <span class="flex items-center gap-1.5"><span class="text-slate-600">📍</span> {{ job.location
+                        }}</span>
+                    <span class="flex items-center gap-1.5"><span class="text-slate-600">💼</span> {{
+                        job.experience_required }}yr Exp</span>
+                    <span class="flex items-center gap-1.5 text-slate-500"><span class="text-slate-600">🕒</span> {{
+                        job.created_at|timesince }} ago</span>
+                </div>
+
+                <p class="text-slate-400 text-sm leading-relaxed max-w-2xl line-clamp-2">
+                    {{ job.description }}
+                </p>
+            </div>
+
+            <div class="flex flex-row md:flex-col justify-between items-center md:items-end gap-4 min-w-40">
+                <div class="text-right hidden md:block">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Salary</p>
+                    <p class="text-lg font-bold text-white">₹{{ job.salary|default:"Commensurate" }}</p>
+                </div>
+
+                <div class="w-full flex justify-end">
+                    {% if user.role == "JOB_SEEKER" %}
                     {% if job.id in applied_job_ids %}
-                        <button class="applied-btn" disabled>✓ Already Applied</button>
+                    <span
+                        class="px-6 py-2.5 bg-slate-800/50 text-slate-400 rounded-xl text-sm font-bold border border-slate-700/50 flex items-center gap-2">
+                        ✓ Applied
+                    </span>
                     {% else %}
-                        <a href="{% url 'apply_job' job.id %}" class="apply-btn">Apply Now</a>
+                    <a href="{% url 'apply_job' job.id %}"
+                        class="w-full md:w-auto text-center px-8 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-cyan-50 hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
+                        Apply Now
+                    </a>
                     {% endif %}
-                {% elif user.role == "EMPLOYER" %}
-                    {% if job.employer.user.id == user.id %}
-                        <a href="{% url 'view_applicants' job.id %}" class="apply-btn" style="background-color: #6366f1;">View Applicants</a>
+                    {% elif user.role == "EMPLOYER" and job.employer.user == user %}
+                    <a href="{% url 'view_applicants' job.id %}"
+                        class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all">
+                        Applicants
+                    </a>
+                    {% else %}
+                    <a href="{% url 'job_detail' job.slug %}"
+                        class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-700 border border-slate-700 transition-all">
+                        View Role
+                    </a>
                     {% endif %}
-                {% else %}
-                    <a href="{% url 'login' %}" class="apply-btn">Login to Apply</a>
-                {% endif %}
+                </div>
             </div>
         </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-20 glass rounded-[2rem] border border-dashed border-slate-700/50">
+        <div class="w-20 h-20 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
+            <span class="text-4xl">🔍</span>
+        </div>
+        <h3 class="text-xl font-bold text-white">No jobs found</h3>
+        <p class="text-slate-400 mt-2">Try adjusting your filters or search terms.</p>
+        <a href="{% url 'job_list' %}"
+            class="inline-block mt-6 text-cyan-400 font-bold hover:text-cyan-300 transition-colors">Clear all
+            filters</a>
+    </div>
     {% endfor %}
 </div>
 
-<div style="text-align: center; margin-top: 2rem; padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="mt-12 flex items-center justify-center gap-4">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" style="background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; margin-right: 1rem;">← Previous</a>
+    <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+        class="p-3 glass rounded-xl hover:bg-cyan-500 hover:text-white text-slate-400 transition-all">←</a>
     {% endif %}
 
-    <span style="margin: 0 1rem; color: #475569; font-weight: 600;">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </span>
+    <div class="glass px-6 py-3 rounded-xl font-bold text-slate-200 text-sm border border-white/10">
+        {{ page_obj.number }} <span class="mx-2 text-slate-600">/</span> {{ page_obj.paginator.num_pages }}
+    </div>
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" style="background-color: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; margin-left: 1rem;">Next →</a>
+    <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+        class="p-3 glass rounded-xl hover:bg-cyan-500 hover:text-white text-slate-400 transition-all">→</a>
     {% endif %}
 </div>
-{% else %}
-    <div class="empty-state">
-        <h2 style="color: #1e293b; margin-bottom: 1rem;">No jobs available</h2>
-        <p>Check back soon for new opportunities!</p>
-        {% if not user.is_authenticated %}
-            <p style="margin-top: 1rem;">
-                <a href="{% url 'signup' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Sign up</a> to get notified about new jobs.
-            </p>
-        {% endif %}
-    </div>
 {% endif %}
 {% endblock %}

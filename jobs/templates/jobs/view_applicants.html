@@ -1,173 +1,108 @@
 {% extends "base.html" %}
 
-{% block title %}Applicants for {{ job.title }} - Career Plus{% endblock %}
+{% block title %}Applicants for {{ job.title }} | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Jobs</a></li>
-        <li><a href="{% url 'employer_dashboard' %}">Dashboard</a></li>
-        <li class="current">Applicants</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition-colors duration-300">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <a href="{% url 'employer_dashboard' %}" class="hover:text-cyan-400 transition-colors duration-300">Dashboard</a>
+        </li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold text-glow">{{ job.title }}</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'employer_dashboard' %}" class="back-button">← Back to Dashboard</a>
-
-<h1>Applicants for {{ job.title }}</h1>
-
-<style>
-    .applicants-container {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-    }
-    
-    .applicants-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .applicants-table thead {
-        background-color: #f1f5f9;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .applicants-table th {
-        padding: 1rem;
-        text-align: left;
-        font-weight: 600;
-        color: #1e293b;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    
-    .applicants-table td {
-        padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-        color: #475569;
-    }
-    
-    .applicants-table tbody tr:hover {
-        background-color: #f8fafc;
-    }
-    
-    .status-badge {
-        display: inline-block;
-        padding: 0.375rem 0.75rem;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    
-    .status-pending {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-    
-    .status-accepted {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-    
-    .status-rejected {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .action-btn {
-        padding: 0.375rem 0.75rem;
-        border: none;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: opacity 0.2s;
-    }
-    
-    .accept-btn {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-    
-    .accept-btn:hover {
-        opacity: 0.8;
-    }
-    
-    .reject-btn {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .reject-btn:hover {
-        opacity: 0.8;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1.5rem;
-        color: #64748b;
-    }
-</style>
+<div class="mb-10 relative">
+    <div class="absolute -top-20 -left-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-bold font-outfit text-white tracking-tight">Review <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 text-glow">Applicants</span></h1>
+            <p class="text-slate-400 mt-2 text-lg font-medium">{{ applications.count }} candidates have applied for this role.</p>
+        </div>
+        <a href="{% url 'employer_dashboard' %}" class="group flex items-center gap-2 text-slate-400 hover:text-cyan-400 font-semibold transition-all px-4 py-2 rounded-xl border border-white/5 hover:border-cyan-500/30 bg-white/5 hover:bg-white/10">
+            <span class="transition-transform group-hover:-translate-x-1">←</span> Back to Dashboard
+        </a>
+    </div>
+</div>
 
 {% if applications %}
-    <div class="applicants-container">
-        <table class="applicants-table">
-            <thead>
-                <tr>
-                    <th>Applicant Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Applied Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for app in applications %}
-                <tr>
-                    <td>{{ app.applicant.full_name }}</td>
-                    <td>{{ app.applicant.user.email }}</td>
-                    <td>
-                        <span class="status-badge status-{{ app.status|lower }}">
-                            {{ app.status|default:"Pending" }}
-                        </span>
-                    </td>
-                    <td>
-                        {% if app.applied_at %}
-                            {{ app.applied_at|date:"M d, Y" }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if app.status == "PENDING" %}
-                        <div class="action-buttons">
-                            <a href="{% url 'update_application_status' app.id 'ACCEPTED' %}" class="action-btn accept-btn">Accept</a>
-                            <a href="{% url 'update_application_status' app.id 'REJECTED' %}" class="action-btn reject-btn">Reject</a>
-                        </div>
-                        {% else %}
-                            <span style="color: #94a3b8;">—</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="glass rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 overflow-hidden backdrop-blur-xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/5 border-b border-white/5">
+                        <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">Candidate</th>
+                        <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">Status</th>
+                        <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">Applied On</th>
+                        <th class="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for app in applications %}
+                    <tr class="hover:bg-white/5 transition-colors duration-300 group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center font-bold text-cyan-400 border border-white/10 shadow-lg shadow-black/20 text-lg">
+                                    {{ app.applicant.full_name|slice:":1" }}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">
+                                        {{ app.applicant.full_name }}
+                                    </p>
+                                    <p class="text-xs text-slate-500 font-medium tracking-wide">{{ app.applicant.user.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md
+                                {% if app.status == 'ACCEPTED' %} bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]
+                                {% elif app.status == 'REJECTED' %} bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]
+                                {% else %} bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)] {% endif %}">
+                                <span class="w-1.5 h-1.5 rounded-full mr-2 animate-pulse
+                                    {% if app.status == 'ACCEPTED' %} bg-emerald-400
+                                    {% elif app.status == 'REJECTED' %} bg-red-400
+                                    {% else %} bg-amber-400 {% endif %}"></span>
+                                {{ app.status|default:"Pending" }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-slate-400 font-medium text-sm">
+                            {{ app.applied_at|date:"M d, Y"|default:"—" }}
+                        </td>
+                        <td class="px-8 py-6">
+                            <div class="flex items-center justify-end gap-3">
+                                {% if app.status == "PENDING" %}
+                                    <a href="{% url 'update_application_status' app.id 'ACCEPTED' %}" 
+                                       class="px-5 py-2.5 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-xl hover:bg-emerald-500 hover:text-white border border-emerald-500/20 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all duration-300">
+                                        Accept
+                                    </a>
+                                    <a href="{% url 'update_application_status' app.id 'REJECTED' %}" 
+                                       class="px-5 py-2.5 bg-red-500/10 text-red-400 text-xs font-bold rounded-xl hover:bg-red-500 hover:text-white border border-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all duration-300">
+                                        Reject
+                                    </a>
+                                {% else %}
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest px-3 py-1 rounded-lg border border-white/5 bg-white/5">Decided</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% else %}
-    <div class="empty-state">
-        <h2 style="color: #1e293b; margin-bottom: 1rem;">No applicants yet</h2>
-        <p>Applicants will appear here once they apply for this position.</p>
+    <div class="glass p-16 rounded-[2rem] border border-white/10 text-center max-w-2xl mx-auto shadow-xl shadow-cyan-900/5 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
+        <div class="text-6xl mb-6 grayscale opacity-50 relative z-10">🏜️</div>
+        <h2 class="text-3xl font-bold text-white font-outfit mb-4 relative z-10">No applicants yet</h2>
+        <p class="text-slate-400 leading-relaxed mb-8 relative z-10 text-lg">As soon as talent starts applying for the <span class="font-bold text-cyan-400">{{ job.title }}</span> role, they will appear here in real-time.</p>
     </div>
 {% endif %}
-
 {% endblock %}

@@ -1,88 +1,185 @@
 {% extends "base.html" %}
 
-{% block title %}Post a Job - Career Plus{% endblock %}
+{% block title %}Post a New Job | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Jobs</a></li>
-        <li><a href="{% url 'employer_dashboard' %}">Dashboard</a></li>
-        <li class="current">Post New Job</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition-colors duration-300">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <a href="{% url 'employer_dashboard' %}"
+                class="hover:text-cyan-400 transition-colors duration-300">Dashboard</a>
+        </li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold text-glow">Post New Job</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'employer_dashboard' %}" class="back-button">← Back to Dashboard</a>
+<div class="max-w-4xl mx-auto py-8 relative">
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10">
+    </div>
 
-<h1>Post a New Job</h1>
+    <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-bold font-outfit text-white tracking-tight mb-3">Post a <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 text-glow">New
+                    Job</span></h1>
+            <p class="text-slate-400 text-lg font-medium">Reach the next generation of talent with a clear job post.</p>
+        </div>
+        <a href="{% url 'employer_dashboard' %}"
+            class="text-slate-400 hover:text-cyan-400 font-semibold transition-all flex items-center gap-2 group px-4 py-2 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10">
+            <span class="transition-transform group-hover:-translate-x-1">←</span> Dashboard
+        </a>
+    </div>
 
-<div style="max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+    <form method="post" class="space-y-8">
         {% csrf_token %}
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            {% for field in form %}
-                {% if field.name != 'description' %}
-                <div>
-                    {{ field.label_tag }}
-                    {{ field }}
+
+        <div
+            class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent opacity-50">
+            </div>
+
+            <div class="flex items-center gap-4 mb-8">
+                <div
+                    class="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2 2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-white font-outfit tracking-wide">Role Overview</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {% for field in form %}
+                {% if field.name != 'description' and field.name != 'skills_required' %}
+                <div class="space-y-2 group">
+                    <label for="{{ field.id_for_label }}"
+                        class="block text-sm font-semibold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors">
+                        {{ field.label }}
+                    </label>
+                    <div class="form-input-wrapper relative">
+                        {{ field }}
+                    </div>
                     {% if field.errors %}
-                        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
-                            {{ field.errors }}
-                        </div>
+                    <p class="text-xs text-red-400 mt-2 font-medium flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ field.errors.0 }}
+                    </p>
                     {% endif %}
                 </div>
                 {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
 
-        {% for field in form %}
-            {% if field.name == 'description' %}
-            <div>
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                    <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
-                        {{ field.errors }}
-                    </div>
-                {% endif %}
+        <div
+            class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
+            <div class="flex items-center gap-4 mb-8">
+                <div
+                    class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 shadow-[0_0_15px_rgba(96,165,250,0.15)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-white font-outfit tracking-wide">Detailed Requirements</h2>
             </div>
-            {% endif %}
-        {% endfor %}
 
-        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-            <button type="submit" style="background-color: #10b981; color: white; padding: 0.75rem 2rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
-                Post Job
-            </button>
-            <a href="{% url 'employer_dashboard' %}" style="background-color: #e2e8f0; color: #1e293b; padding: 0.75rem 2rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: background-color 0.2s;">
-                Cancel
+            <div class="space-y-8">
+                {% for field in form %}
+                {% if field.name == 'skills_required' or field.name == 'description' %}
+                <div class="space-y-2 group">
+                    <label for="{{ field.id_for_label }}"
+                        class="block text-sm font-semibold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors">
+                        {{ field.label }}
+                    </label>
+                    <div class="form-input-wrapper relative">
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                    <p class="text-xs text-red-400 mt-2 font-medium flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ field.errors.0 }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-6 pt-6">
+            <a href="{% url 'employer_dashboard' %}"
+                class="px-8 py-4 text-slate-400 font-bold hover:text-white transition-colors duration-300">
+                Discard Draft
             </a>
+            <button type="submit"
+                class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-12 py-4 rounded-xl font-bold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1 transition-all active:scale-95 border border-white/10 relative overflow-hidden group">
+                <span class="relative z-10">Publish Job Post</span>
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+            </button>
         </div>
     </form>
 </div>
 
 <style>
-    form input, form select, form textarea { 
-        width: 100%; 
-        padding: 0.75rem; 
-        border: 1px solid #cbd5e1; 
-        border-radius: 0.375rem; 
-        font-size: 1rem;
-        background-color: #f8fafc;
-        font-family: inherit;
+    /* Styling for the Django widgets to match the glass design */
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 1rem !important;
+        color: #f8fafc !important;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
     }
-    form input:focus, form select:focus, form textarea:focus { 
-        outline: none;
-        border-color: #3b82f6;
-        background-color: white;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        border-color: rgba(34, 211, 238, 0.5) !important;
+        box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1) !important;
+        outline: none !important;
     }
-    form label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #1e293b;
+
+    input::placeholder,
+    textarea::placeholder {
+        color: rgba(148, 163, 184, 0.5) !important;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 1rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        appearance: none;
+    }
+
+    textarea {
+        min-height: 150px;
+        line-height: 1.6;
     }
 </style>
 {% endblock %}

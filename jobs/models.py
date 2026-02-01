@@ -9,8 +9,8 @@ class Job(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     skills_required = models.TextField()
-    experience_required = models.DecimalField(max_digits=3, decimal_places=1)
-    salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    experience_required = models.CharField(max_length=5, blank=True, null=True, help_text="Years of experience required")
+    salary = models.CharField(max_length=10, blank=True, null=True, help_text="Salary range or amount")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -23,6 +23,7 @@ class Job(models.Model):
                 self.slug = f"{slug}-{counter}"
                 counter += 1
         super().save(*args, **kwargs)
+        
 
     def __str__(self):
         return f"{self.title} at {self.employer.company_name}"

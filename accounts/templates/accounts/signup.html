@@ -1,111 +1,151 @@
 {% extends "base.html" %}
-
+{% load socialaccount %}
 {% block title %}Sign Up - Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Home</a></li>
-        <li class="current">Sign Up</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold">Sign Up</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<h1>Create Your Account</h1>
+<div class="max-w-xl mx-auto py-10">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold font-outfit text-white mb-2">Create Your Account</h1>
+        <p class="text-slate-400">Join thousands of professionals and companies today.</p>
+    </div>
 
-<div style="max-width: 500px; margin: 0 auto; background: white; padding: 2rem; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
-        {% csrf_token %}
-        
-        <div>
-            <label for="id_email" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Email</label>
-            {{ form.email }}
-        </div>
+    <div
+        class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent pointer-events-none"></div>
+        <form method="post" class="space-y-6 relative z-10">
+            {% csrf_token %}
 
-        <div>
-            <label for="id_role" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Account Type</label>
-            {{ form.role }}
-        </div>
-
-        <div id="company-field" style="display: none;">
-            <label for="id_company_name" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Company Name</label>
-            {{ form.company_name }}
-        </div>
-
-        <div>
-            <label for="id_password1" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Password</label>
-            {{ form.password1 }}
-            {% if form.password1.errors %}
-                <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;">
-                    {% for error in form.password1.errors %}
-                        <p style="margin: 0.25rem 0;">{{ error }}</p>
-                    {% endfor %}
+            <div class="space-y-2">
+                <label for="id_email" class="block text-sm font-semibold text-slate-400 ml-1">Email Address</label>
+                <div class="relative">
+                    {{ form.email }}
                 </div>
-            {% endif %}
-        </div>
-
-        <div>
-            <label for="id_password2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">Confirm Password</label>
-            {{ form.password2 }}
-            {% if form.password2.errors %}
-                <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;">
-                    {% for error in form.password2.errors %}
-                        <p style="margin: 0.25rem 0;">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-
-        {% if form.non_field_errors %}
-            <div style="background-color: #fee2e2; color: #991b1b; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #fecaca;">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
+                {% if form.email.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
             </div>
-        {% endif %}
 
-        <button type="submit" style="background-color: #3b82f6; color: white; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
-            Register
-        </button>
-    </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="id_role" class="block text-sm font-semibold text-slate-400 ml-1">I am a...</label>
+                    {{ form.role }}
+                </div>
 
-    <p style="text-align: center; margin-top: 1.5rem; color: #64748b;">
-        Already have an account? <a href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Login here</a>
-    </p>
+                <div id="company-field" class="space-y-2 hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label for="id_company_name" class="block text-sm font-semibold text-slate-400 ml-1">Company
+                        Name</label>
+                    {{ form.company_name }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="id_password1" class="block text-sm font-semibold text-slate-400 ml-1">Password</label>
+                    {{ form.password1 }}
+                </div>
+                <div class="space-y-2">
+                    <label for="id_password2" class="block text-sm font-semibold text-slate-400 ml-1">Confirm</label>
+                    {{ form.password2 }}
+                </div>
+            </div>
+
+            {% if form.password1.errors or form.password2.errors or form.non_field_errors %}
+            <div class="p-4 bg-red-900/20 border border-red-500/30 rounded-xl text-red-300 text-xs space-y-1">
+                {% for error in form.password1.errors %} <p>• {{ error }}</p> {% endfor %}
+                {% for error in form.password2.errors %} <p>• {{ error }}</p> {% endfor %}
+                {% for error in form.non_field_errors %} <p>• {{ error }}</p> {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit"
+                class="w-full bg-cyan-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 hover:-translate-y-0.5 transition-all active:scale-[0.98]">
+                Get Started
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-700/50 text-center relative z-10">
+            <p class="text-slate-500">
+                Already have an account?
+                <a href="{% url 'login' %}"
+                    class="text-cyan-400 font-bold hover:underline underline-offset-4 transition">Login here</a>
+            </p>
+        </div>
+        <!-- Add this inside your form or below it -->
+        <div class="mt-4">
+            <a href="{% provider_login_url 'google' %}"
+                class="flex items-center justify-center gap-2 w-full bg-white text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-100 transition-all">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                Continue with Google
+            </a>
+        </div>
+
+    </div>
 </div>
 
 <style>
-    form input, form select { 
-        width: 100%; 
-        padding: 0.75rem; 
-        border: 1px solid #cbd5e1; 
-        border-radius: 0.375rem; 
-        font-size: 1rem;
-        background-color: #f8fafc;
+    /* Styling the Django-rendered widgets via CSS classes */
+    input,
+    select {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        background-color: rgba(15, 23, 42, 0.5) !important;
+        border: 1px solid rgba(51, 65, 85, 0.5) !important;
+        border-radius: 1rem !important;
+        font-size: 0.95rem;
+        color: #f8fafc !important;
+        transition: all 0.2s;
     }
-    form input:focus, form select:focus { 
-        outline: none;
-        border-color: #3b82f6;
-        background-color: white;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
+    input::placeholder {
+        color: #64748b !important;
+    }
+
+    input:focus,
+    select:focus {
+        outline: none !important;
+        border-color: #06b6d4 !important;
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1) !important;
+    }
+
+    /* Custom styling for select dropdown options */
+    select option {
+        background-color: #0f172a;
+        color: #f8fafc;
+        padding: 10px;
     }
 </style>
 
 <script>
-    const roleSelect = document.getElementById("id_role");
-    const companyField = document.getElementById("company-field");
+    document.addEventListener("DOMContentLoaded", () => {
+        const roleSelect = document.getElementById("id_role");
+        const companyField = document.getElementById("company-field");
 
-    function toggleCompanyField() {
-        if (roleSelect.value === "EMPLOYER") {
-            companyField.style.display = "block";
-        } else {
-            companyField.style.display = "none";
-        }
-    }
+        const toggleCompanyField = () => {
+            if (roleSelect.value === "EMPLOYER") {
+                companyField.classList.remove("hidden");
+                // Focus the company name field for better UX
+                setTimeout(() => companyField.querySelector('input').focus(), 100);
+            } else {
+                companyField.classList.add("hidden");
+            }
+        };
 
-    roleSelect.addEventListener("change", toggleCompanyField);
-    window.onload = toggleCompanyField;
+        roleSelect.addEventListener("change", toggleCompanyField);
+        // Run on initial load in case of validation errors
+        toggleCompanyField();
+    });
 </script>
 {% endblock %}

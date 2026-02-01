@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import signup_view, login_view, logout_view, jobseeker_dashboard, employer_dashboard
+from .views import (
+    signup_view, login_view, logout_view, jobseeker_dashboard, 
+    employer_dashboard, edit_profile, select_role, check_role 
+)
 
 urlpatterns = [
     path('signup/', signup_view, name='signup'),
@@ -7,4 +10,7 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('dashboard/jobseeker/', jobseeker_dashboard, name='jobseeker_dashboard'),
     path('dashboard/employer/', employer_dashboard, name='employer_dashboard'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
+    path('select-role/', select_role, name='select_role'),
+    path('check-role/', check_role, name='check_role'),
 ]

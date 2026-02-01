@@ -1,47 +1,104 @@
 {% extends "base.html" %}
-
+{% load socialaccount %}
 {% block title %}Login - Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<div class="breadcrumb">
-    <ul>
-        <li><a href="{% url 'job_list' %}">Home</a></li>
-        <li class="current">Login</li>
-    </ul>
-</div>
+<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2">
+        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition">Home</a></li>
+        <li class="flex items-center gap-2">
+            <span class="text-slate-600">/</span>
+            <span class="text-cyan-400 font-semibold">Login</span>
+        </li>
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
-<h1>Welcome Back</h1>
+<div class="max-w-md mx-auto py-12">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold font-outfit text-white mb-2">Welcome Back</h1>
+        <p class="text-slate-400 font-medium">Please enter your details to sign in.</p>
+    </div>
 
-<div class="max-w-md mx-auto pt-10">
-    <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
-        {% comment %} <div class="text-center mb-8">
-            <h2 style="color: #1e293b; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">Sign In</h2>
-        </div> {% endcomment %}
-
-        <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+    <div
+        class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent pointer-events-none"></div>
+        <form method="post" class="space-y-6 relative z-10">
             {% csrf_token %}
-            <div class="form-container">
-                {{ form.as_p }}
+
+            <div class="form-container space-y-4">
+                {% for field in form %}
+                <div class="space-y-2">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-slate-400 ml-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                    <p class="text-xs text-red-400 mt-1 font-medium italic">! {{ error }}</p>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
             </div>
-            <button type="submit" style="width: 100%; background-color: #3b82f6; color: white; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+
+            {% if form.non_field_errors %}
+            <div class="p-3 bg-red-900/20 border border-red-500/30 rounded-xl text-red-300 text-xs">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit"
+                class="w-full bg-cyan-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 hover:-translate-y-0.5 transition-all active:scale-[0.98]">
                 Sign In
             </button>
         </form>
 
-        <div style="margin-top: 2rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 2rem;">
-            <p style="color: #64748b; font-size: 0.875rem;">
-                Don't have an account? <a href="{% url 'signup' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Sign up here</a>
+        <div class="mt-8 pt-6 border-t border-slate-700/50 text-center relative z-10">
+            <p class="text-slate-500 text-sm">
+                Don't have an account?
+                <a href="{% url 'signup' %}"
+                    class="text-cyan-400 font-bold hover:underline underline-offset-4 transition">Create one</a>
             </p>
+        </div>
+
+        <!-- Add this inside your form or below it -->
+        <div class="mt-4">
+            <a href="{% provider_login_url 'google' %}"
+                class="flex items-center justify-center gap-2 w-full bg-white text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-100 transition-all">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                Continue with Google
+            </a>
         </div>
     </div>
 </div>
 
 <style>
-    .form-container p { margin-bottom: 1rem; }
-    .form-container label { display: block; font-size: 0.875rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem; }
-    .form-container input { width: 100%; border: 1px solid #e2e8f0; border-radius: 0.375rem; padding: 0.625rem 1rem; background: #f8fafc; font-size: 1rem; }
-    .form-container input:focus { outline: none; border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    /* Styling the Django-rendered fields consistently */
+    .form-container input {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        background-color: rgba(15, 23, 42, 0.5) !important;
+        border: 1px solid rgba(51, 65, 85, 0.5) !important;
+        border-radius: 1rem !important;
+        font-size: 0.95rem;
+        color: #f8fafc !important;
+        transition: all 0.2s;
+    }
+
+    .form-container input::placeholder {
+        color: #64748b !important;
+    }
+
+    .form-container input:focus {
+        outline: none !important;
+        border-color: #06b6d4 !important;
+        /* cyan-500 */
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1) !important;
+    }
 </style>
 {% endblock %}
