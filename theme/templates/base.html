@@ -201,12 +201,14 @@
         <div class="max-w-2xl mx-auto">
             {% if messages %}
             {% for message in messages %}
+            {% if 'success' not in message.tags %}
             <div
                 class="alert-animate p-4 rounded-2xl mb-4 flex items-center gap-3 glass border 
                         {% if 'error' in message.tags %} border-red-200 text-red-700 {% else %} border-emerald-200 text-emerald-700 {% endif %} shadow-sm">
                 <span class="text-xl">{% if 'error' in message.tags %}⚠️{% else %}✨{% endif %}</span>
                 <p class="text-sm font-medium">{{ message }}</p>
             </div>
+            {% endif %}
             {% endfor %}
             {% endif %}
         </div>

@@ -71,6 +71,18 @@
                 </div>
                 {% endif %}
 
+                {% if profile_form.profile_image.errors %}
+                <div
+                    class="absolute -bottom-1 left-0 right-0 bg-red-500/90 text-[8px] text-white font-black py-1 px-2 text-center backdrop-blur-md">
+                    {{ profile_form.profile_image.errors|striptags }}
+                </div>
+                {% elif profile_form.company_logo.errors %}
+                <div
+                    class="absolute -bottom-1 left-0 right-0 bg-red-500/90 text-[8px] text-white font-black py-1 px-2 text-center backdrop-blur-md">
+                    {{ profile_form.company_logo.errors|striptags }}
+                </div>
+                {% endif %}
+
                 <!-- Hover Overlay (Pointer Events None to allow click through) -->
                 <div
                     class="absolute inset-0 bg-slate-950/70 flex flex-col items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -191,6 +203,19 @@
                 </div>
                 {% endfor %}
             </div>
+
+            <div class="mt-8 flex justify-start">
+                <a href="{% url 'account_change_password' %}"
+                    class="text-xs text-cyan-400 font-bold uppercase tracking-widest hover:text-cyan-300 transition-colors flex items-center gap-2 group/pass">
+                    <div class="p-1.5 rounded-lg bg-cyan-500/10 group-hover/pass:bg-cyan-500/20 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    Manage Security & Password
+                </a>
+            </div>
         </section>
 
         <!-- Professional Section -->
@@ -211,7 +236,7 @@
 
             <div class="space-y-10">
                 {% for field in profile_form %}
-                {% if field.name != 'profile_image' and field.name != 'company_logo' %}
+                {% if field.name != 'profile_image' and field.name != 'company_logo' and field.name != 'resume' %}
                 <div class="space-y-3 group">
                     <label
                         class="block text-sm font-bold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors duration-300">
@@ -236,25 +261,88 @@
                 </div>
                 {% endif %}
                 {% endfor %}
+
+                {% if request.user.role == 'JOB_SEEKER' %}
+                <!-- Custom Resume Field -->
+                <div class="space-y-3 group mt-10 p-6 glass border border-white/5 rounded-[1.5rem] bg-cyan-500/5">
+                    <div class="flex items-center justify-between mb-2">
+                        <label
+                            class="block text-sm font-bold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors duration-300">
+                            Professional Resume (PDF)
+                        </label>
+                        {% if profile.resume %}
+                        <a href="{{ profile.resume.url }}" target="_blank"
+                            class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest hover:text-cyan-300 transition-colors flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Current
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <button type="button" onclick="triggerResumeUpload()"
+                            class="flex-grow md:flex-grow-0 px-6 py-4 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-slate-200 text-sm font-semibold transition-all flex items-center justify-center gap-3 group/resume">
+                            <svg class="w-5 h-5 text-cyan-400 group-hover/resume:scale-110 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            Upload New Resume
+                        </button>
+
+                        <div class="flex-grow">
+                            <p id="resume-filename"
+                                class="text-xs text-slate-500 font-medium truncate italic max-w-[200px]">
+                                {% if profile.resume %}{{ profile.resume.name|truncatechars:30 }}{% else %}No file
+                                selected{% endif %}
+                            </p>
+                        </div>
+
+                        {% if profile.resume %}
+                        <button type="button" onclick="removeResumeAction()"
+                            class="p-4 text-red-500 hover:bg-red-500/10 rounded-xl transition-colors shrink-0"
+                            title="Remove Resume">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if profile_form.resume.errors %}
+                    <p class="text-xs text-red-400 mt-2 font-medium flex items-center gap-1.5 px-1">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ profile_form.resume.errors|striptags }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </section>
 
         <!-- Hidden File Input Fields (Required for Django) -->
         <div class="hidden">
             {% for field in profile_form %}
-            {% if field.name == 'profile_image' or field.name == 'company_logo' %}
+            {% if field.name == 'profile_image' or field.name == 'company_logo' or field.name == 'resume' %}
             {{ field }}
             {% endif %}
             {% endfor %}
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-8 pt-4">
+        <div class="flex items-center justify-end gap-6 pt-10 border-t border-white/5">
             <a href="javascript:history.back()"
-                class="px-6 py-3 text-slate-400 font-bold hover:text-white transition-all hover:tracking-widest">Cancel</a>
+                class="px-6 py-3 text-sm text-slate-400 font-bold hover:text-white transition-all hover:tracking-widest">Cancel</a>
             <button type="submit"
-                class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-10 py-5 rounded-[1.25rem] font-black shadow-[0_0_30px_rgba(34,211,238,0.2)] hover:shadow-[0_0_50px_rgba(34,211,238,0.4)] hover:-translate-y-1 transition-all active:scale-95 group relative overflow-hidden">
-                <span class="relative z-10 uppercase tracking-widest text-xs">Save Profile</span>
+                class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-black shadow-[0_0_30px_rgba(34,211,238,0.2)] hover:shadow-[0_0_50px_rgba(34,211,238,0.4)] hover:-translate-y-1 transition-all active:scale-95 group relative overflow-hidden">
+                <span class="relative z-10 uppercase tracking-widest text-xs">Save Changes</span>
                 <div
                     class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                 </div>
@@ -380,12 +468,12 @@
         // Try to check the Django clear checkbox - try multiple ID patterns
         const clearId1 = inputId + '-clear_id';
         const clearId2 = inputId + '-clear';
-        const clearId3 = 'id_' + (role === 'JOB_SEEKER' ? 'profile_image' : 'company_logo') + '-clear_id';
+        const clearId3 = (role === 'JOB_SEEKER') ? 'id_profile_image-clear_id' : 'id_company_logo-clear_id';
 
         let clearCheck = document.getElementById(clearId1) ||
             document.getElementById(clearId2) ||
             document.getElementById(clearId3) ||
-            document.querySelector('input[name*="clear"]');
+            document.querySelector(`input[name="${(role === 'JOB_SEEKER' ? 'profile_image' : 'company_logo')}-clear"]`);
 
         console.log('Looking for clear checkbox...');
         console.log('Tried IDs:', clearId1, clearId2, clearId3);
@@ -432,6 +520,77 @@
                 };
                 reader.readAsDataURL(file);
             }
+        } else if (e.target.id === 'id_resume') {
+            const file = e.target.files[0];
+            if (file) {
+                const filenameElem = document.getElementById('resume-filename');
+                if (filenameElem) {
+                    filenameElem.textContent = file.name;
+                    filenameElem.classList.add('text-cyan-400');
+                    filenameElem.classList.remove('text-slate-500', 'text-red-400');
+                }
+
+                // Clear any delete flag if a new file is selected
+                const clearCheck = document.getElementById('id_resume-clear_id');
+                if (clearCheck) clearCheck.checked = false;
+            }
+        }
+    });
+
+    function triggerResumeUpload() {
+        const resumeInput = document.getElementById('id_resume');
+        if (resumeInput) resumeInput.click();
+    }
+
+    function removeResumeAction() {
+        const resumeInput = document.getElementById('id_resume');
+        const clearCheck = document.getElementById('id_resume-clear_id');
+        const filenameElem = document.getElementById('resume-filename');
+
+        if (resumeInput) resumeInput.value = '';
+        if (clearCheck) clearCheck.checked = true;
+
+        // Also try to find the clear checkbox by name if ID fails
+        if (!clearCheck) {
+            const clearByName = document.querySelector('input[name="resume-clear"]');
+            if (clearByName) clearByName.checked = true;
+        }
+
+        if (filenameElem) {
+            filenameElem.textContent = "Resume will be removed on save";
+            filenameElem.classList.add('text-red-400');
+            filenameElem.classList.remove('text-cyan-400', 'text-slate-500');
+        }
+    }
+
+    // Improve Experience field UX
+    document.addEventListener('DOMContentLoaded', function () {
+        const expField = document.getElementById('id_experience');
+        if (expField) {
+            expField.setAttribute('inputmode', 'numeric');
+            expField.setAttribute('pattern', '[0-9]*');
+            expField.placeholder = "e.g. 5";
+        }
+
+        const skillsField = document.getElementById('id_skills');
+        if (skillsField) {
+            skillsField.addEventListener('input', function (e) {
+                // Prettify: Ensure space after comma
+                let value = e.target.value;
+                if (value.includes(',') && !value.includes(', ')) {
+                    e.target.value = value.replace(/,([^\s])/g, ', $1');
+                }
+            });
+        }
+
+        const phoneField = document.getElementById('id_phone');
+        if (phoneField) {
+            phoneField.setAttribute('inputmode', 'tel');
+            phoneField.placeholder = "e.g. 9876543210";
+            phoneField.addEventListener('input', function (e) {
+                // Keep only digits
+                e.target.value = e.target.value.replace(/\D/g, '').substring(0, 10);
+            });
         }
     });
 </script>

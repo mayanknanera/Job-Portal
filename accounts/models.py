@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.utils import timezone
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, role=None):
         if not email:
@@ -32,6 +33,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
         ('ADMIN', 'Admin'),
@@ -54,33 +56,40 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    # 🔥 CRITICAL FOR ALLAUTH PASSWORD RESET
     USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email
 
+
 class JobSeekerProfile(models.Model):
-    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15, blank=True, null=True)
     skills = models.TextField(blank=True, null=True)
-    experience = models.CharField(max_length=5, blank=True, null=True, help_text="Years of experience")
+    experience = models.CharField(
+        max_length=5,
+        blank=True,
+        null=True,
+        help_text="Years of experience"
+    )
     resume = models.FileField(upload_to='resumes/', blank=True, null=True)
-    profile_image = models.ImageField(upload_to="profiles/",blank=True,null=True)
-
+    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
 
     def __str__(self):
         return self.full_name
 
+
 class EmployerProfile(models.Model):
-    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=150)
     company_description = models.TextField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     company_logo = models.ImageField(upload_to="company_logos/", blank=True, null=True)
-
 
     def __str__(self):
         return self.company_name

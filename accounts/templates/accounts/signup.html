@@ -82,14 +82,48 @@
                     class="text-cyan-400 font-bold hover:underline underline-offset-4 transition">Login here</a>
             </p>
         </div>
-        <!-- Add this inside your form or below it -->
-        <div class="mt-4">
-            <a href="{% provider_login_url 'google' %}"
-                class="flex items-center justify-center gap-2 w-full bg-white text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-100 transition-all">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                Continue with Google
-            </a>
+
+        {% get_providers as socialaccount_providers %}
+        {% if socialaccount_providers %}
+        <!-- Social Authentication Section -->
+        <div class="mt-8 pt-6 border-t border-slate-700/50">
+            <div class="relative flex py-5 items-center">
+                <div class="flex-grow border-t border-slate-700/50"></div>
+                <span class="flex-shrink mx-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Or
+                    continue with</span>
+                <div class="flex-grow border-t border-slate-700/50"></div>
+            </div>
+
+            <div class="space-y-3">
+                {% for provider in socialaccount_providers %}
+                <a href="{% provider_login_url provider.id %}"
+                    class="flex items-center justify-center gap-3 w-full bg-slate-900/50 border border-slate-700/50 text-white font-bold py-3.5 rounded-2xl hover:bg-white hover:text-slate-900 transition-all duration-300 group/social">
+                    {% if provider.id == 'google' %}
+                    <img src="https://www.google.com/favicon.ico" alt="Google"
+                        class="w-5 h-5 group-hover/social:brightness-110">
+                    {% endif %}
+                    {{ provider.name }}
+                </a>
+                {% endfor %}
+            </div>
         </div>
+        {% else %}
+        <!-- Placeholder for design visibility during setup -->
+        <div class="mt-8 pt-6 border-t border-slate-700/50 opacity-40">
+            <div class="relative flex py-5 items-center text-center">
+                <div class="flex-grow border-t border-slate-700/50"></div>
+                <span
+                    class="flex-shrink mx-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">Google
+                    Pending Setup</span>
+                <div class="flex-grow border-t border-slate-700/50"></div>
+            </div>
+            <div class="flex items-center justify-center gap-3 w-full bg-slate-950/20 border border-slate-700/50 text-slate-500 font-bold py-3.5 rounded-2xl cursor-help"
+                title="Add Google Social App in Admin to activate">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5 grayscale">
+                Google
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 </div>

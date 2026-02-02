@@ -1,7 +1,6 @@
 from django import forms
 from .models import User, JobSeekerProfile, EmployerProfile
 
-
 class UserCreationForm(forms.ModelForm):
     company_name = forms.CharField(
         required=False,
@@ -32,7 +31,10 @@ class UserCreationForm(forms.ModelForm):
         ]
 
     def clean_email(self):
-        return self.cleaned_data['email'].lower()
+        email = self.cleaned_data['email'].lower()
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("A user with this email already exists.")
+        return email
 
     # 🛡️ EXTRA SECURITY: BLOCK ADMIN EVEN IF FORGED
     def clean_role(self):
@@ -94,6 +96,9 @@ class JobSeekerProfileForm(forms.ModelForm):
             'skills': 'Separate skills with commas (e.g. Python, UI Design, Marketing)',
             'resume': 'Upload a PDF version of your latest CV.',
         }
+        widgets = {
+            'skills': forms.TextInput(attrs={'placeholder': 'Python, JavaScript, React...'}),
+        }
 
     def clean_resume(self):
         resume = self.cleaned_data.get('resume')
@@ -104,6 +109,32 @@ class JobSeekerProfileForm(forms.ModelForm):
                 raise forms.ValidationError("Resume file size cannot exceed 5MB.")
         return resume
 
+    def clean_experience(self):
+        experience = self.cleaned_data.get('experience')
+        if experience:
+            if not experience.isdigit():
+                raise forms.ValidationError("Experience must be a positive whole number.")
+            if int(experience) < 0:
+                raise forms.ValidationError("Experience cannot be negative.")
+        return experience
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            # Remove any common separators if present (though we'll encourage 10 digits)
+            phone = ''.join(filter(str.isdigit, phone))
+            if len(phone) != 10:
+                raise forms.ValidationError("Phone number must be exactly 10 digits.")
+        return phone
+
+    def clean_full_name(self):
+        name = self.cleaned_data.get('full_name')
+        if name:
+            name = name.strip()
+            if len(name) < 2:
+                raise forms.ValidationError("Full name must be at least 2 characters long.")
+        return name
+
 
 class EmployerProfileForm(forms.ModelForm):
     class Meta:
@@ -112,3 +143,19 @@ class EmployerProfileForm(forms.ModelForm):
         widgets = {
             'company_description': forms.Textarea(attrs={'rows': 4}),
         }
+
+    def clean_company_name(self):
+        name = self.cleaned_data.get('company_name')
+        if name:
+            name = name.strip()
+            if len(name) < 2:
+                raise forms.ValidationError("Company name must be at least 2 characters long.")
+        return name
+
+    def clean_location(self):
+        location = self.cleaned_data.get('location')
+        if location:
+            location = location.strip()
+            if len(location) < 2:
+                raise forms.ValidationError("Location must be at least 2 characters long.")
+        return location

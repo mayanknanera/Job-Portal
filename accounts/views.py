@@ -11,7 +11,7 @@ def signup_view(request):
 
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             if user.role == 'JOB_SEEKER':
                 return redirect('jobseeker_dashboard')
@@ -56,30 +56,8 @@ def jobseeker_dashboard(request):
     if profile.skills:
         skills_list = [skill.strip() for skill in profile.skills.split(',')]
 
-    if request.method == 'POST':
-        user_form = UserEditForm(request.POST, instance=user)
-        profile_form = JobSeekerProfileForm(
-            request.POST,
-            request.FILES,
-            instance=profile
-        )
-
-        if user_form.is_valid() and profile_form.is_valid():
-            with transaction.atomic():
-                user_form.save()
-                profile_form.save()
-
-            messages.success(request, "Profile updated successfully.")
-            return redirect('jobseeker_dashboard')
-
-    else:
-        user_form = UserEditForm(instance=user)
-        profile_form = JobSeekerProfileForm(instance=profile)
-
     context = {
         'profile': profile,
-        'user_form': user_form,
-        'profile_form': profile_form,
         'skills_list': skills_list,
     }
 
@@ -90,25 +68,8 @@ def employer_dashboard(request):
     profile = request.user.employerprofile
     user = request.user
 
-    # Handle profile editing
-    if request.method == 'POST':
-        user_form = UserEditForm(request.POST, instance=user)
-        profile_form = EmployerProfileForm(request.POST, request.FILES, instance=profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            with transaction.atomic():
-                user_form.save()
-                profile_form.save()
-            messages.success(request, "Profile updated successfully.")
-            return redirect('employer_dashboard')
-    else:
-        user_form = UserEditForm(instance=user)
-        profile_form = EmployerProfileForm(instance=profile)
-
     context = {
         'profile': profile,
-        'user_form': user_form,
-        'profile_form': profile_form,
     }
     return render(request, 'accounts/employer_dashboard.html', context)
 
@@ -125,7 +86,7 @@ def edit_profile(request):
         ProfileForm = EmployerProfileForm
     else:
         messages.error(request, "Invalid user role.")
-        return redirect('dashboard')
+        return redirect('home')
 
     if request.method == 'POST':
         user_form = UserEditForm(
@@ -152,9 +113,14 @@ def edit_profile(request):
                         profile.company_logo.delete(save=False)
                         profile.company_logo = None
                 
+                # Handle resume deletion manually
+                if request.POST.get('resume-clear'):
+                    profile.resume.delete(save=False)
+                    profile.resume = None
+                
                 profile_form.save()
 
-            messages.success(request, "Profile updated successfully.")
+
             if user.role == 'JOB_SEEKER':
                 return redirect('jobseeker_dashboard')
             else:
