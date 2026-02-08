@@ -59,7 +59,7 @@ def job_application_status_changed(sender, instance, **kwargs):
             print(f"\n=== APPLICATION STATUS CHANGED ===", file=sys.stdout)
             print(f"Applicant: {applicant_name}", file=sys.stdout)
             print(f"Job: {instance.job.title}", file=sys.stdout)
-            print(f"Status: {previous.status} → {instance.status}", file=sys.stdout)
+            print(f"Status: {previous.status} -> {instance.status}", file=sys.stdout)
             print("===================================\n", file=sys.stdout)
             
             try:

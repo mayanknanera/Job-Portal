@@ -13,9 +13,7 @@ def signup_view(request):
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-            if user.role == 'JOB_SEEKER':
-                return redirect('jobseeker_dashboard')
-            return redirect('employer_dashboard')
+            return redirect('check_role')
 
     else:
         form = UserCreationForm()
@@ -32,10 +30,7 @@ def login_view(request):
             user = authenticate(request, email=email, password=password)
             if user:
                 login(request, user)
-                if user.role == 'JOB_SEEKER':
-                    return redirect('jobseeker_dashboard')
-                else:
-                    return redirect('employer_dashboard')
+                return redirect('check_role')
             else:
                 messages.error(request, "Invalid credentials")
     else:
@@ -51,7 +46,7 @@ def jobseeker_dashboard(request):
     profile = request.user.jobseekerprofile
     user = request.user
 
-    # ✅ split skills by comma AND trim spaces
+    # Split skills by comma and trim spaces
     skills_list = []
     if profile.skills:
         skills_list = [skill.strip() for skill in profile.skills.split(',')]
@@ -79,14 +74,18 @@ def edit_profile(request):
 
     # Select profile + form based on role
     if user.role == 'JOB_SEEKER':
-        profile = user.jobseekerprofile
+        profile = getattr(user, 'jobseekerprofile', None)
         ProfileForm = JobSeekerProfileForm
     elif user.role == 'EMPLOYER':
-        profile = user.employerprofile
+        profile = getattr(user, 'employerprofile', None)
         ProfileForm = EmployerProfileForm
     else:
         messages.error(request, "Invalid user role.")
         return redirect('home')
+
+    if not profile:
+        messages.error(request, "Please complete your profile setup first.")
+        return redirect('select_role')
 
     if request.method == 'POST':
         user_form = UserEditForm(
@@ -136,11 +135,7 @@ def edit_profile(request):
         'profile': profile,
     }
     return render(request, 'accounts/edit_profile.html', context)
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import User, JobSeekerProfile, EmployerProfile
-
+    
 @login_required
 def select_role(request):
     user = request.user

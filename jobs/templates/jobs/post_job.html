@@ -3,78 +3,64 @@
 {% block title %}Post a New Job | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
-    <ol class="flex items-center space-x-2">
-        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition-colors duration-300">Home</a></li>
-        <li class="flex items-center gap-2">
-            <span class="text-slate-600">/</span>
-            <a href="{% url 'employer_dashboard' %}"
-                class="hover:text-cyan-400 transition-colors duration-300">Dashboard</a>
-        </li>
-        <li class="flex items-center gap-2">
-            <span class="text-slate-600">/</span>
-            <span class="text-cyan-400 font-semibold text-glow">Post New Job</span>
-        </li>
-    </ol>
-</nav>
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <a href="{% url 'employer_dashboard' %}" class="hover:text-sky-600 transition-colors">Dashboard</a>
+</li>
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <span class="text-sky-600 font-bold">Initialize Job Node</span>
+</li>
 {% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto py-8 relative">
-    <div class="absolute -top-20 -right-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10">
-    </div>
+    <div class="absolute -top-20 -right-20 w-96 h-96 bg-sky-100/50 rounded-full blur-[100px] pointer-events-none -z-10"></div>
 
-    <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-            <h1 class="text-4xl md:text-5xl font-bold font-outfit text-white tracking-tight mb-3">Post a <span
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 text-glow">New
-                    Job</span></h1>
-            <p class="text-slate-400 text-lg font-medium">Reach the next generation of talent with a clear job post.</p>
+            <span class="text-[10px] font-black text-sky-500 uppercase tracking-[0.3em] mb-1 block">Recruitment Protocol</span>
+            <h1 class="text-4xl md:text-5xl font-black font-brand text-slate-900 tracking-tight">
+                Post a <span class="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-blue-600">New Job</span>
+            </h1>
+            <p class="text-slate-400 font-medium text-sm mt-1">Broadcast your mission to the 2026 talent network.</p>
         </div>
         <a href="{% url 'employer_dashboard' %}"
-            class="text-slate-400 hover:text-cyan-400 font-semibold transition-all flex items-center gap-2 group px-4 py-2 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10">
-            <span class="transition-transform group-hover:-translate-x-1">←</span> Dashboard
+            class="group flex items-center gap-3 bg-white border border-slate-200 px-6 py-3 rounded-2xl text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">
+            <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+            Command Center
         </a>
     </div>
 
     <form method="post" class="space-y-8">
         {% csrf_token %}
 
-        <div
-            class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
-            <div
-                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent opacity-50">
-            </div>
+        <div class="glass p-8 md:p-12 rounded-4xl border border-white shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-transparent via-sky-500/30 to-transparent"></div>
 
-            <div class="flex items-center gap-4 mb-8">
-                <div
-                    class="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2 2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
+            <div class="flex items-center gap-4 mb-10">
+                <div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-satellite"></i>
                 </div>
-                <h2 class="text-xl font-bold text-white font-outfit tracking-wide">Role Overview</h2>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 font-brand uppercase tracking-tight">Core Configuration</h2>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Primary Role Metadata</p>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {% for field in form %}
                 {% if field.name != 'description' and field.name != 'skills_required' %}
                 <div class="space-y-2 group">
-                    <label for="{{ field.id_for_label }}"
-                        class="block text-sm font-semibold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors">
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-black uppercase tracking-widest text-slate-400 ml-1 group-focus-within:text-sky-500 transition-colors">
                         {{ field.label }}
                     </label>
-                    <div class="form-input-wrapper relative">
+                    <div class="relative transition-all focus-within:translate-x-1">
                         {{ field }}
                     </div>
                     {% if field.errors %}
-                    <p class="text-xs text-red-400 mt-2 font-medium flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {{ field.errors.0 }}
+                    <p class="text-[10px] text-rose-500 font-bold italic ml-1 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ field.errors.0 }}
                     </p>
                     {% endif %}
                 </div>
@@ -83,37 +69,30 @@
             </div>
         </div>
 
-        <div
-            class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
-            <div class="flex items-center gap-4 mb-8">
-                <div
-                    class="p-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 shadow-[0_0_15px_rgba(96,165,250,0.15)]">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+        <div class="glass p-8 md:p-12 rounded-4xl border border-white shadow-2xl relative overflow-hidden">
+            <div class="flex items-center gap-4 mb-10">
+                <div class="w-12 h-12 bg-slate-900 text-sky-400 rounded-2xl flex items-center justify-center text-xl shadow-lg">
+                    <i class="fa-solid fa-code-branch"></i>
                 </div>
-                <h2 class="text-xl font-bold text-white font-outfit tracking-wide">Detailed Requirements</h2>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 font-brand uppercase tracking-tight">Technical Spec</h2>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Detailed Requirements & Scope</p>
+                </div>
             </div>
 
-            <div class="space-y-8">
+            <div class="space-y-10">
                 {% for field in form %}
                 {% if field.name == 'skills_required' or field.name == 'description' %}
                 <div class="space-y-2 group">
-                    <label for="{{ field.id_for_label }}"
-                        class="block text-sm font-semibold text-slate-400 ml-1 group-focus-within:text-cyan-400 transition-colors">
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-black uppercase tracking-widest text-slate-400 ml-1 group-focus-within:text-sky-500 transition-colors">
                         {{ field.label }}
                     </label>
-                    <div class="form-input-wrapper relative">
+                    <div class="relative transition-all">
                         {{ field }}
                     </div>
                     {% if field.errors %}
-                    <p class="text-xs text-red-400 mt-2 font-medium flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {{ field.errors.0 }}
+                    <p class="text-[10px] text-rose-500 font-bold italic ml-1 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ field.errors.0 }}
                     </p>
                     {% endif %}
                 </div>
@@ -122,64 +101,59 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-end gap-6 pt-6">
-            <a href="{% url 'employer_dashboard' %}"
-                class="px-8 py-4 text-slate-400 font-bold hover:text-white transition-colors duration-300">
-                Discard Draft
+        <div class="flex flex-col md:flex-row items-center justify-end gap-6 pt-6">
+            <a href="{% url 'employer_dashboard' %}" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors">
+                Delete Draft
             </a>
+            
             <button type="submit"
-                class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-12 py-4 rounded-xl font-bold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-1 transition-all active:scale-95 border border-white/10 relative overflow-hidden group">
-                <span class="relative z-10">Publish Job Post</span>
-                <div
-                    class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                </div>
+                class="w-full md:w-auto bg-slate-900 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-slate-200 hover:bg-sky-600 hover:-translate-y-1 transition-all active:scale-95 group relative overflow-hidden">
+                <span class="relative z-10">Publish to Network</span>
+                <div class="absolute inset-0 bg-linear-to-r from-sky-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
         </div>
     </form>
 </div>
 
 <style>
-    /* Styling for the Django widgets to match the glass design */
-    input,
-    select,
-    textarea {
+    /* 2026 Light Theme Input Styling */
+    input:not([type="checkbox"]), select, textarea {
         width: 100%;
-        padding: 1rem 1.5rem;
-        background-color: rgba(15, 23, 42, 0.6) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 1rem !important;
-        color: #f8fafc !important;
+        padding: 1.15rem 1.5rem;
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 1.25rem !important;
+        color: #1e293b !important;
         font-size: 0.95rem;
+        font-weight: 600;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(5px);
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-        background-color: rgba(15, 23, 42, 0.8) !important;
-        border-color: rgba(34, 211, 238, 0.5) !important;
-        box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1) !important;
+    input:focus, select:focus, textarea:focus {
+        background: #ffffff !important;
+        border-color: #0ea5e9 !important;
+        box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.15) !important;
         outline: none !important;
     }
 
-    input::placeholder,
-    textarea::placeholder {
-        color: rgba(148, 163, 184, 0.5) !important;
+    input::placeholder, textarea::placeholder {
+        color: #94a3b8 !important;
+        font-weight: 500;
     }
 
     select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 1rem center;
-        background-repeat: no-repeat;
-        background-size: 1.5em 1.5em;
-        padding-right: 2.5rem;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%230ea5e9' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+        background-position: right 1.25rem center !important;
+        background-repeat: no-repeat !important;
+        background-size: 1.2em !important;
         appearance: none;
     }
 
     textarea {
-        min-height: 150px;
-        line-height: 1.6;
+        min-height: 200px;
+        line-height: 1.7;
+        resize: none;
     }
 </style>
 {% endblock %}

@@ -3,7 +3,7 @@ from .views import (
     job_create_view, job_list_view, 
     apply_job_view, view_applicants_view, 
     update_application_status, applied_jobs_view,
-    job_detail_view
+    job_detail_view, download_resume
 )
 
 
@@ -15,5 +15,5 @@ urlpatterns = [
     path('update-status/<int:app_id>/<str:status>/', update_application_status, name='update_application_status'),
     path('applied/', applied_jobs_view, name='applied_jobs'),
     path('<slug:slug>/', job_detail_view, name='job_detail'),
-
+    path("applications/<int:application_id>/resume/", download_resume, name="download_resume"),
 ]

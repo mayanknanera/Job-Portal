@@ -56,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    # 🔥 CRITICAL FOR ALLAUTH PASSWORD RESET
+    # CRITICAL FOR ALLAUTH PASSWORD RESET
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []

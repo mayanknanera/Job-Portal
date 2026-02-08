@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm as DjangoUserCreationForm
 from .models import User, JobSeekerProfile, EmployerProfile
 
 class UserCreationForm(forms.ModelForm):
@@ -10,18 +11,18 @@ class UserCreationForm(forms.ModelForm):
 
     password1 = forms.CharField(
         label='Password',
-        widget=forms.PasswordInput(attrs={'placeholder': '••••••••'})
+        widget=forms.PasswordInput(attrs={'placeholder': '********'})
     )
     password2 = forms.CharField(
         label='Confirm Password',
-        widget=forms.PasswordInput(attrs={'placeholder': '••••••••'})
+        widget=forms.PasswordInput(attrs={'placeholder': '********'})
     )
 
     class Meta:
         model = User
         fields = ('email', 'role', 'company_name', 'password1', 'password2')
 
-    # 🔐 FILTER ROLES (HIDE ADMIN)
+    # FILTER ROLES (HIDE ADMIN)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -36,7 +37,7 @@ class UserCreationForm(forms.ModelForm):
             raise forms.ValidationError("A user with this email already exists.")
         return email
 
-    # 🛡️ EXTRA SECURITY: BLOCK ADMIN EVEN IF FORGED
+    # EXTRA SECURITY: BLOCK ADMIN EVEN IF FORGED
     def clean_role(self):
         role = self.cleaned_data.get('role')
         if role == 'ADMIN':
@@ -53,11 +54,12 @@ class UserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        user.is_role_confirmed = True
 
         if commit:
             user.save()
 
-            # 🧩 Update employer profile if needed
+            # Update employer profile if needed
             if user.role == 'EMPLOYER':
                 profile = getattr(user, 'employerprofile', None)
                 if profile:
@@ -72,7 +74,7 @@ class UserLoginForm(forms.Form):
         widget=forms.EmailInput(attrs={'placeholder': 'email@example.com'})
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': '••••••••'})
+        widget=forms.PasswordInput(attrs={'placeholder': '********'})
     )
 
 
@@ -94,7 +96,7 @@ class JobSeekerProfileForm(forms.ModelForm):
         fields = ['full_name', 'phone', 'skills', 'experience', 'resume', 'profile_image']
         help_texts = {
             'skills': 'Separate skills with commas (e.g. Python, UI Design, Marketing)',
-            'resume': 'Upload a PDF version of your latest CV.',
+            'resume': 'Upload your resume (PDF, DOC, or DOCX format).',
         }
         widgets = {
             'skills': forms.TextInput(attrs={'placeholder': 'Python, JavaScript, React...'}),
@@ -103,8 +105,13 @@ class JobSeekerProfileForm(forms.ModelForm):
     def clean_resume(self):
         resume = self.cleaned_data.get('resume')
         if resume:
-            if not resume.name.lower().endswith('.pdf'):
-                raise forms.ValidationError("Please upload your resume in PDF format.")
+            # Use same validation as jobs/validators.py
+            ALLOWED_EXTENSIONS = ["pdf", "doc", "docx"]
+            extension = resume.name.split(".")[-1].lower()
+            if extension not in ALLOWED_EXTENSIONS:
+                raise forms.ValidationError(
+                    "Invalid file type. Only PDF and Word documents are allowed."
+                )
             if resume.size > 5 * 1024 * 1024:  # 5MB limit
                 raise forms.ValidationError("Resume file size cannot exceed 5MB.")
         return resume
@@ -121,10 +128,10 @@ class JobSeekerProfileForm(forms.ModelForm):
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
         if phone:
-            # Remove any common separators if present (though we'll encourage 10 digits)
+            # Remove any common separators
             phone = ''.join(filter(str.isdigit, phone))
-            if len(phone) != 10:
-                raise forms.ValidationError("Phone number must be exactly 10 digits.")
+            if len(phone) < 10:
+                raise forms.ValidationError("Phone number must be at least 10 digits.")
         return phone
 
     def clean_full_name(self):

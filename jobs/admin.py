@@ -5,7 +5,7 @@ from .models import Job, JobApplication
 class JobAdmin(admin.ModelAdmin):
     list_display = ('title', 'employer', 'location', 'experience_required', 'salary', 'is_active')
     list_filter = ('is_active', 'location')
-    search_fields = ('title', 'skills_required', 'employer__company_name')
+    search_fields = ('title', 'skills_required__name', 'employer__company_name')
 
 @admin.register(JobApplication)
 class JobApplicationAdmin(admin.ModelAdmin):

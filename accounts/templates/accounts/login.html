@@ -1,144 +1,133 @@
 {% extends "base.html" %}
 {% load socialaccount %}
-{% block title %}Login - Career Plus{% endblock %}
+
+{% block title %}Login | Career Plus{% endblock %}
 
 {% block breadcrumb %}
-<nav class="flex text-sm font-medium text-slate-400" aria-label="Breadcrumb">
-    <ol class="flex items-center space-x-2">
-        <li><a href="{% url 'home' %}" class="hover:text-cyan-400 transition">Home</a></li>
-        <li class="flex items-center gap-2">
-            <span class="text-slate-600">/</span>
-            <span class="text-cyan-400 font-semibold">Login</span>
-        </li>
-    </ol>
-</nav>
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <span class="text-sky-600 font-bold uppercase tracking-widest text-[10px]">Portal Access</span>
+</li>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto py-12">
+<div class="max-w-md mx-auto py-12 relative">
+    <div class="absolute -top-10 -right-10 w-64 h-64 bg-sky-100/50 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+    <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-50 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
     <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold font-outfit text-white mb-2">Welcome Back</h1>
-        <p class="text-slate-400 font-medium">Please enter your details to sign in.</p>
+        <h1 class="text-4xl md:text-5xl font-black font-brand text-slate-900 tracking-tight mb-2">
+            Welcome <span class="text-sky-500">Back</span>
+        </h1>
+        <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Secure Gateway 2026</p>
     </div>
 
-    <div
-        class="glass p-8 md:p-10 rounded-[2rem] shadow-xl shadow-cyan-900/5 border border-white/10 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent pointer-events-none"></div>
+    <div class="glass p-8 md:p-12 rounded-[3rem] border border-white shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-linear-to-tr from-sky-500/5 to-transparent pointer-events-none"></div>
+        
         <form method="post" class="space-y-6 relative z-10">
             {% csrf_token %}
 
-            <div class="form-container space-y-4">
+            <div class="form-container space-y-5">
                 {% for field in form %}
-                <div class="space-y-2">
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-slate-400 ml-1">
+                <div class="space-y-2 group">
+                    <label for="{{ field.id_for_label }}" class="block text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 group-focus-within:text-sky-500 transition-colors">
                         {{ field.label }}
                     </label>
-                    {{ field }}
+                    <div class="relative transition-transform duration-300 focus-within:translate-x-1">
+                        {{ field }}
+                    </div>
                     {% if field.errors %}
-                    {% for error in field.errors %}
-                    <p class="text-xs text-red-400 mt-1 font-medium italic">! {{ error }}</p>
-                    {% endfor %}
+                        {% for error in field.errors %}
+                        <p class="text-[10px] text-rose-500 font-bold italic ml-1 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                        </p>
+                        {% endfor %}
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
 
             {% if form.non_field_errors %}
-            <div class="p-3 bg-red-900/20 border border-red-500/30 rounded-xl text-red-300 text-xs">
+            <div class="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-[11px] font-bold">
                 {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
+                <p class="flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
             <div class="flex items-center justify-end">
                 <a href="{% url 'account_reset_password' %}"
-                    class="text-xs font-bold text-cyan-400/80 hover:text-cyan-400 transition-colors uppercase tracking-wider">
-                    Forgot Password?
+                    class="text-[10px] font-black text-slate-400 hover:text-sky-500 transition-colors uppercase tracking-widest">
+                    Recovery Access?
                 </a>
             </div>
 
             <button type="submit"
-                class="w-full bg-cyan-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 hover:-translate-y-0.5 transition-all active:scale-[0.98]">
-                Sign In
+                class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-200 hover:bg-sky-600 hover:-translate-y-1 transition-all active:scale-[0.98]">
+                Authorize Session
             </button>
         </form>
 
-        <div class="mt-8 pt-6 border-t border-slate-700/50 text-center relative z-10">
-            <p class="text-slate-500 text-sm">
-                Don't have an account?
-                <a href="{% url 'signup' %}"
-                    class="text-cyan-400 font-bold hover:underline underline-offset-4 transition">Create one</a>
+        <div class="mt-10 pt-8 border-t border-slate-100 relative z-10">
+            {% get_providers as socialaccount_providers %}
+            {% if socialaccount_providers %}
+                <div class="relative flex items-center justify-center mb-8">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
+                    <span class="relative px-4 bg-white text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">OAuth Login</span>
+                </div>
+
+                <div class="space-y-3">
+                    {% for provider in socialaccount_providers %}
+                    <a href="{% provider_login_url provider.id %}"
+                        class="flex items-center justify-center gap-3 w-full bg-white border border-slate-200 text-slate-900 font-black py-4 rounded-2xl hover:border-sky-500 hover:shadow-lg transition-all group/social">
+                        {% if provider.id == 'google' %}
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5 group-hover/social:scale-110 transition-transform">
+                        {% endif %}
+                        <span class="text-xs uppercase tracking-widest">{{ provider.name }} Identity</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+                    No secondary auth active
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 text-center relative z-10">
+            <p class="text-slate-400 text-[11px] font-bold uppercase tracking-widest">
+                New to Career Plus?
+                <a href="{% url 'signup' %}" class="text-sky-500 hover:text-sky-600 transition-colors ml-1">Establish ID</a>
             </p>
         </div>
-
-        {% get_providers as socialaccount_providers %}
-        {% if socialaccount_providers %}
-        <!-- Social Authentication Section -->
-        <div class="mt-8 pt-6 border-t border-slate-700/50">
-            <div class="relative flex py-5 items-center">
-                <div class="flex-grow border-t border-slate-700/50"></div>
-                <span class="flex-shrink mx-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest">Or
-                    continue with</span>
-                <div class="flex-grow border-t border-slate-700/50"></div>
-            </div>
-
-            <div class="space-y-3">
-                {% for provider in socialaccount_providers %}
-                <a href="{% provider_login_url provider.id %}"
-                    class="flex items-center justify-center gap-3 w-full bg-slate-900/50 border border-slate-700/50 text-white font-bold py-3.5 rounded-2xl hover:bg-white hover:text-slate-900 transition-all duration-300 group/social">
-                    {% if provider.id == 'google' %}
-                    <img src="https://www.google.com/favicon.ico" alt="Google"
-                        class="w-5 h-5 group-hover/social:brightness-110">
-                    {% endif %}
-                    {{ provider.name }}
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% else %}
-        <!-- Placeholder for design visibility during setup -->
-        <div class="mt-8 pt-6 border-t border-slate-700/50 opacity-40">
-            <div class="relative flex py-5 items-center text-center">
-                <div class="flex-grow border-t border-slate-700/50"></div>
-                <span
-                    class="flex-shrink mx-4 text-slate-500 text-[10px] font-bold uppercase tracking-widest italic">Google
-                    Pending Setup</span>
-                <div class="flex-grow border-t border-slate-700/50"></div>
-            </div>
-            <div class="flex items-center justify-center gap-3 w-full bg-slate-950/20 border border-slate-700/50 text-slate-500 font-bold py-3.5 rounded-2xl cursor-help"
-                title="Add Google Social App in Admin to activate">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5 grayscale">
-                Google
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 
 <style>
-    /* Styling the Django-rendered fields consistently */
+    /* Styling the Django-rendered fields to match 2026 Light Theme */
     .form-container input {
         width: 100%;
-        padding: 0.875rem 1.25rem;
-        background-color: rgba(15, 23, 42, 0.5) !important;
-        border: 1px solid rgba(51, 65, 85, 0.5) !important;
-        border-radius: 1rem !important;
-        font-size: 0.95rem;
-        color: #f8fafc !important;
-        transition: all 0.2s;
+        padding: 1.15rem 1.5rem;
+        background-color: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 1.25rem !important;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1e293b !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .form-container input::placeholder {
-        color: #64748b !important;
+        color: #94a3b8 !important;
+        font-weight: 500;
     }
 
     .form-container input:focus {
         outline: none !important;
-        border-color: #06b6d4 !important;
-        /* cyan-500 */
-        background-color: rgba(15, 23, 42, 0.8) !important;
-        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1) !important;
+        border-color: #0ea5e9 !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.15) !important;
     }
 </style>
 {% endblock %}

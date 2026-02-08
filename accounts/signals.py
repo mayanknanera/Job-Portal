@@ -12,7 +12,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if not created:
         return
 
-    # 🧑‍💼 Job Seeker Profile
+    # Job Seeker Profile
     if instance.role == 'JOB_SEEKER':
         JobSeekerProfile.objects.get_or_create(
             user=instance,
@@ -21,7 +21,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             }
         )
 
-    # 🏢 Employer Profile
+    # Employer Profile
     elif instance.role == 'EMPLOYER':
         EmployerProfile.objects.get_or_create(
             user=instance,

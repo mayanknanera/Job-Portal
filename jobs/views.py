@@ -6,6 +6,10 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
 from accounts.decorators import role_required
+from django.views.decorators.http import require_POST
+from django.http import FileResponse, HttpResponseForbidden
+
+import mimetypes
 
 @login_required
 @role_required('EMPLOYER')
@@ -47,7 +51,7 @@ def job_list_view(request):
 
     if experience:
         try:
-            experience = float(experience)
+            experience = int(experience)
             jobs = jobs.filter(experience_required__lte=experience)
         except (ValueError, TypeError):
             pass
@@ -59,9 +63,15 @@ def job_list_view(request):
         
     applied_job_ids = []
     if request.user.role == 'JOB_SEEKER':
-        applied_job_ids = JobApplication.objects.filter(
-            applicant=request.user.jobseekerprofile
-        ).values_list('job_id', flat=True)
+        profile = getattr(request.user, 'jobseekerprofile', None)
+        if profile:
+            applied_job_ids = JobApplication.objects.filter(
+                applicant=profile
+            ).values_list('job_id', flat=True)
+        else:
+            applied_job_ids = []
+    else:
+        applied_job_ids = []
 
     return render(request, 'jobs/job_list.html', {
         'page_obj': page_obj,
@@ -71,29 +81,40 @@ def job_list_view(request):
 @login_required
 @role_required('JOB_SEEKER')
 def apply_job_view(request, job_id):
-    job = Job.objects.select_related('employer').get(id=job_id)
-    profile = request.user.jobseekerprofile
-
+    job = get_object_or_404(Job, id=job_id)
+    profile = getattr(request.user, 'jobseekerprofile', None)
+    if not profile:
+        messages.error(request, "Please complete your profile first.")
+        return redirect('edit_profile')
+    
+    # Prevent duplicate signal connections
     if JobApplication.objects.filter(job=job, applicant=profile).exists():
         messages.warning(request, "You have already applied for this job.")
         return redirect('job_list')
 
     if request.method == "POST":
-        cover_letter = request.POST.get('cover_letter')
+        # System check: Ensure the profile actually has a resume
+        if not profile.resume:
+            messages.error(request, "Resume missing")
+            return redirect('edit_profile')
+
+        # Create the application using the profile's resume
         JobApplication.objects.create(
             job=job,
             applicant=profile,
-            cover_letter=cover_letter
+            resume=profile.resume, # Re-uses the existing profile file
+            cover_letter=request.POST.get('cover_letter')
         )
-        messages.success(request, "Application submitted successfully!")
+        
+        messages.success(request, "Application successful. Profile dossier linked!")
         return redirect('applied_jobs')
 
-    return render(request, 'jobs/apply_job.html', {'job': job})
+    return render(request, 'jobs/apply_job.html', {'job': job, 'profile': profile})
 
 @login_required
 @role_required('EMPLOYER')
 def view_applicants_view(request, job_id):
-    job = Job.objects.get(id=job_id, employer=request.user.employerprofile)
+    job = get_object_or_404(Job, id=job_id, employer=request.user.employerprofile)
     applications = job.applications.all()
     
     return render(request, 'jobs/view_applicants.html', {
@@ -103,6 +124,7 @@ def view_applicants_view(request, job_id):
 
 @login_required
 @role_required('EMPLOYER')
+@require_POST
 def update_application_status(request, app_id, status):
     application = JobApplication.objects.get(id=app_id)
     if application.job.employer != request.user.employerprofile:
@@ -144,3 +166,35 @@ def job_detail_view(request, slug):
         'job': job,
         'applied': applied
     })
+
+
+@login_required
+@role_required('EMPLOYER')
+def download_resume(request, application_id):
+    # 1. First, find the application. If it doesn't exist at all, 404 is correct.
+    application = get_object_or_404(JobApplication, id=application_id)
+    
+    # 2. Check if the logged-in employer owns the job for this application.
+    # If they don't, return 403 Forbidden.
+    if application.job.employer.user != request.user:
+        return HttpResponseForbidden("You are not authorized to access this dossier.")
+    
+    if not application.resume:
+        messages.error(request, "Resume file not found.")
+        return redirect('view_applicants', job_id=application.job.id)
+        
+    try:
+        # Detect MIME type based on file extension
+        mime_type, _ = mimetypes.guess_type(application.resume.name)
+        if not mime_type:
+            mime_type = 'application/octet-stream'  # fallback
+
+        response = FileResponse(
+            application.resume.open(), 
+            content_type=mime_type
+        )
+        filename = application.resume.name.split('/')[-1]  # Get actual filename
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+    except FileNotFoundError:
+        return HttpResponseForbidden("Physical file missing from storage.")
