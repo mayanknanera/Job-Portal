@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Jobs | Career Plus{% endblock %}
+
+{% block breadcrumb %}
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <span class="text-sky-600 font-bold uppercase tracking-widest text-[10px]">Saved Jobs</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="mb-10">
+    <h1 class="text-4xl md:text-5xl font-black font-brand text-slate-900 tracking-tight leading-none">
+        Your <span class="text-transparent bg-clip-text bg-linear-to-r from-amber-500 to-orange-600">Saved</span> Jobs
+    </h1>
+    <p class="text-slate-400 mt-3 text-lg font-medium">Jobs you've bookmarked for later review.</p>
+</div>
+
+<div class="space-y-8">
+    {% for saved_job in page_obj %}
+    <div class="glass p-8 md:p-10 rounded-4xl border border-white hover:border-amber-200 transition-all group relative overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-100 hover:-translate-y-1">
+        <div class="absolute top-4 right-4">
+            <button 
+               onclick="toggleSaveJob('{{ saved_job.job.id }}')"
+                class="save-job-btn text-amber-500 hover:text-amber-600 transition-colors p-2"
+                data-job-id="{{ saved_job.job.id }}">
+                <i class="fa-solid fa-bookmark text-xl"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">
+                            <a href="{% url 'job_detail' saved_job.job.slug %}" class="hover:text-sky-600 transition-colors">
+                                {{ saved_job.job.title }}
+                            </a>
+                        </h3>
+                        <p class="text-sm text-slate-500 font-medium">{{ saved_job.job.employer.company_name }}</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <span class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="fa-solid fa-location-dot text-sky-400"></i> {{ saved_job.job.location }}
+                    </span>
+                    <span class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> {{ saved_job.job.experience_required|default:"0" }}yr Exp
+                    </span>
+                    {% if saved_job.job.salary_display %}
+                    <span class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> {{ saved_job.job.salary_display }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-slate-400 text-sm leading-relaxed max-w-2xl line-clamp-2 font-medium">
+                    {{ saved_job.job.description|truncatewords:30 }}
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <a href="{% url 'job_detail' saved_job.job.slug %}" 
+                   class="px-6 py-3 bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-sky-600 transition-all text-center">
+                    View Details
+                </a>
+                {% if saved_job.job.id not in applied_job_ids %}
+                <a href="{% url 'apply_job' saved_job.job.id %}" 
+                   class="px-6 py-3 bg-sky-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-sky-600 transition-all text-center">
+                    Apply Now
+                </a>
+                {% else %}
+                <div class="px-6 py-3 bg-emerald-50 text-emerald-600 font-black text-xs uppercase tracking-widest rounded-2xl text-center border border-emerald-100">
+                    Applied
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="glass p-16 rounded-4xl border border-white text-center">
+        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-bookmark text-3xl text-slate-300"></i>
+        </div>
+        <h3 class="text-2xl font-black text-slate-900 font-brand">No Saved Jobs Yet</h3>
+        <p class="text-slate-400 mt-2 font-medium">Start bookmarking jobs that interest you!</p>
+        <a href="{% url 'job_list' %}" class="inline-block mt-8 text-sky-500 font-black uppercase tracking-widest text-[11px] hover:text-sky-600 border-b-2 border-sky-500 pb-1">
+            Browse Jobs
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center mt-12 gap-2">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" 
+           class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="px-4 py-2 bg-sky-500 text-white rounded-xl">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}" 
+               class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
+                {{ num }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" 
+           class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleSaveJob(jobId) {
+    fetch(`/jobs/save/${jobId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'saved' || data.status === 'unsaved') {
+            location.reload();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

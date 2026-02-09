@@ -1,6 +1,13 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm as DjangoUserCreationForm
 from .models import User, JobSeekerProfile, EmployerProfile
+from jobs.validators import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
+
+def _clean_min_length(value, min_len, error_message):
+    if value:
+        value = value.strip()
+        if len(value) < min_len:
+            raise forms.ValidationError(error_message)
+    return value
 
 class UserCreationForm(forms.ModelForm):
     company_name = forms.CharField(
@@ -105,14 +112,12 @@ class JobSeekerProfileForm(forms.ModelForm):
     def clean_resume(self):
         resume = self.cleaned_data.get('resume')
         if resume:
-            # Use same validation as jobs/validators.py
-            ALLOWED_EXTENSIONS = ["pdf", "doc", "docx"]
             extension = resume.name.split(".")[-1].lower()
             if extension not in ALLOWED_EXTENSIONS:
                 raise forms.ValidationError(
                     "Invalid file type. Only PDF and Word documents are allowed."
                 )
-            if resume.size > 5 * 1024 * 1024:  # 5MB limit
+            if resume.size > MAX_FILE_SIZE_MB * 1024 * 1024:
                 raise forms.ValidationError("Resume file size cannot exceed 5MB.")
         return resume
 
@@ -135,12 +140,11 @@ class JobSeekerProfileForm(forms.ModelForm):
         return phone
 
     def clean_full_name(self):
-        name = self.cleaned_data.get('full_name')
-        if name:
-            name = name.strip()
-            if len(name) < 2:
-                raise forms.ValidationError("Full name must be at least 2 characters long.")
-        return name
+        return _clean_min_length(
+            self.cleaned_data.get('full_name'),
+            2,
+            "Full name must be at least 2 characters long."
+        )
 
 
 class EmployerProfileForm(forms.ModelForm):
@@ -152,17 +156,15 @@ class EmployerProfileForm(forms.ModelForm):
         }
 
     def clean_company_name(self):
-        name = self.cleaned_data.get('company_name')
-        if name:
-            name = name.strip()
-            if len(name) < 2:
-                raise forms.ValidationError("Company name must be at least 2 characters long.")
-        return name
+        return _clean_min_length(
+            self.cleaned_data.get('company_name'),
+            2,
+            "Company name must be at least 2 characters long."
+        )
 
     def clean_location(self):
-        location = self.cleaned_data.get('location')
-        if location:
-            location = location.strip()
-            if len(location) < 2:
-                raise forms.ValidationError("Location must be at least 2 characters long.")
-        return location
+        return _clean_min_length(
+            self.cleaned_data.get('location'),
+            2,
+            "Location must be at least 2 characters long."
+        )

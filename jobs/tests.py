@@ -33,7 +33,6 @@ def create_jobseeker(email="js@test.com", password="testpass123"):
         password=password,
         role="JOB_SEEKER"
     )
-    # FIX: Return the profile instance, not the User object
     return user.jobseekerprofile 
 
 
@@ -46,7 +45,6 @@ class JobModelTests(TestCase):
     def test_job_creation(self):
         employer_profile = create_employer("emp@test.com")
 
-        # FIX: Removed 'job_type' as it is not in your current model
         job = Job.objects.create(
             title="Django Developer",
             employer=employer_profile,
@@ -81,7 +79,6 @@ class JobApplicationTests(TestCase):
             content_type="application/pdf"
         )
 
-        # FIX: Passing the profile instance to 'applicant'
         application = JobApplication.objects.create(
             job=job,
             applicant=jobseeker_profile,
@@ -101,7 +98,7 @@ class ResumeAccessTests(TestCase):
 
     def test_only_employer_can_download_resume(self):
         employer_profile = create_employer("emp3@test.com")
-        other_employer_profile = create_employer("other@test.com", password="pass")
+        create_employer("other@test.com", password="pass")
 
         seeker_profile = create_jobseeker("seeker2@test.com", password="pass")
 

@@ -6,35 +6,24 @@ from django.contrib import messages
 from django.db import transaction
 
 def signup_view(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-
-        if form.is_valid():
-            user = form.save()
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-            return redirect('check_role')
-
-    else:
-        form = UserCreationForm()
-
+    form = UserCreationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        return redirect('check_role')
     return render(request, 'accounts/signup.html', {'form': form})
 
 
 def login_view(request):
-    if request.method == "POST":
-        form = UserLoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, email=email, password=password)
-            if user:
-                login(request, user)
-                return redirect('check_role')
-            else:
-                messages.error(request, "Invalid credentials")
-    else:
-        form = UserLoginForm()
+    form = UserLoginForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        email = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
+        user = authenticate(request, email=email, password=password)
+        if user:
+            login(request, user)
+            return redirect('check_role')
+        messages.error(request, "Invalid credentials")
     return render(request, 'accounts/login.html', {'form': form})
 
 def logout_view(request):
@@ -44,12 +33,9 @@ def logout_view(request):
 @login_required
 def jobseeker_dashboard(request):
     profile = request.user.jobseekerprofile
-    user = request.user
 
     # Split skills by comma and trim spaces
-    skills_list = []
-    if profile.skills:
-        skills_list = [skill.strip() for skill in profile.skills.split(',')]
+    skills_list = [skill.strip() for skill in profile.skills.split(',')] if profile.skills else []
 
     context = {
         'profile': profile,
@@ -61,7 +47,6 @@ def jobseeker_dashboard(request):
 @login_required
 def employer_dashboard(request):
     profile = request.user.employerprofile
-    user = request.user
 
     context = {
         'profile': profile,
@@ -118,7 +103,6 @@ def edit_profile(request):
                     profile.resume = None
                 
                 profile_form.save()
-
 
             if user.role == 'JOB_SEEKER':
                 return redirect('jobseeker_dashboard')

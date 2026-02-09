@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thread.subject }} | Messages | Career Plus{% endblock %}
+
+{% block breadcrumb %}
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <a href="{% url 'inbox' %}" class="text-sky-600 font-bold uppercase tracking-widest text-[10px] hover:text-sky-700">Messages</a>
+</li>
+<li class="flex items-center gap-2">
+    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+    <span class="text-sky-600 font-bold uppercase tracking-widest text-[10px]">{{ thread.subject|truncatechars:20 }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="mb-10">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-black font-brand text-slate-900 tracking-tight leading-none">
+                {{ thread.subject }}
+            </h1>
+            <p class="text-slate-400 mt-3 text-lg font-medium">
+                {% if thread.job_application %}
+                    Conversation about {{ thread.job_application.job.title }}
+                {% else %}
+                    {% if other_participant %}
+                        Conversation with {{ other_participant.email }}
+                    {% endif %}
+                {% endif %}
+            </p>
+        </div>
+        <a href="{% url 'inbox' %}" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all">
+            <i class="fa-solid fa-arrow-left mr-2"></i>Back to Messages
+        </a>
+    </div>
+</div>
+
+<!-- Messages Container -->
+<div class="glass rounded-4xl border border-white p-6 mb-6">
+    <div class="space-y-6 max-h-96 overflow-y-auto" id="messages-container">
+        {% for message in messages %}
+        <div class="flex {% if message.sender == user %}justify-end{% else %}justify-start{% endif %}">
+            <div class="max-w-lg {% if message.sender == user %}order-2{% else %}order-1{% endif %}">
+                <div class="flex items-center gap-3 mb-2 {% if message.sender == user %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                        <span class="text-slate-600 font-semibold text-sm">
+                            {{ message.sender.email|slice:":1"|upper }}
+                        </span>
+                    </div>
+                    <div class="text-xs text-slate-400">
+                        {{ message.sender.email }}
+                    </div>
+                    <div class="text-xs text-slate-400">
+                        {{ message.created_at|date:"M d, Y H:i" }}
+                    </div>
+                </div>
+                <div class="p-4 rounded-2xl {% if message.sender == user %}bg-sky-500 text-white{% else %}bg-slate-100 text-slate-900{% endif %}">
+                    <p class="text-sm">{{ message.content|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-8">
+            <p class="text-slate-400">No messages yet. Start the conversation!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Reply Form -->
+<div class="glass rounded-4xl border border-white p-6">
+    <form id="reply-form" method="post" action="{% url 'send_message' thread.id %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-sm font-black text-slate-900 mb-2">Reply to {{ other_participant.email }}</label>
+            <textarea name="content" id="message-content" rows="4" 
+                      class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                      placeholder="Type your message here..." required></textarea>
+        </div>
+        <div class="flex justify-end">
+            <button type="submit" class="px-6 py-3 bg-sky-500 text-white rounded-xl font-black hover:bg-sky-600 transition-all">
+                <i class="fa-solid fa-paper-plane mr-2"></i>Send Message
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('reply-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending...';
+    submitBtn.disabled = true;
+    
+    fetch('{% url "send_message" thread.id %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Clear the form
+            document.getElementById('message-content').value = '';
+            
+            // Add the new message to the conversation
+            const messagesContainer = document.getElementById('messages-container');
+            const newMessageHtml = `
+                <div class="flex justify-end">
+                    <div class="max-w-lg order-2">
+                        <div class="flex items-center gap-3 mb-2 justify-end">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                                <span class="text-slate-600 font-semibold text-sm">
+                                    {{ user.email|slice:":1"|upper }}
+                                </span>
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                {{ user.email }}
+                            </div>
+                            <div class="text-xs text-slate-400">
+                                Just now
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-sky-500 text-white">
+                            <p class="text-sm">${formData.get('content').replace(/\n/g, '<br>')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            alert('Error sending message: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending message. Please try again.');
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+// Auto-scroll to bottom on page load
+document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+</script>
+{% endblock %}

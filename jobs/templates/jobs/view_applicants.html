@@ -91,6 +91,10 @@
                         </td>
                         <td class="px-10 py-8">
                             <div class="flex items-center justify-end gap-3">
+                                <a href="{% url 'message_with_applicant' app.id %}" 
+                                   class="px-4 py-2.5 bg-sky-100 text-sky-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-sky-200 transition-all border border-sky-200">
+                                    <i class="fa-solid fa-envelope mr-2"></i>Message
+                                </a>
                                 {% if app.status == "PENDING" %}
                                     <form method="post" action="{% url 'update_application_status' app.id 'ACCEPTED' %}" class="inline">
                                         {% csrf_token %}

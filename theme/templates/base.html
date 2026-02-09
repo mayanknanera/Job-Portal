@@ -133,14 +133,34 @@
         </a>
         {% if user.is_authenticated %}
             {% if user.role == 'JOB_SEEKER' %}
-            <a href="{% url 'jobseeker_dashboard' %}" class="nav-dock-link">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="text-[10px] uppercase tracking-widest">Dash</span>
+            <a href="{% url 'job_list' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-briefcase w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Browse Jobs</span>
+            </a>
+            <a href="{% url 'applied_jobs' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-file-alt w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Applied Jobs</span>
+            </a>
+            <a href="{% url 'saved_jobs' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-bookmark w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Saved Jobs</span>
+            </a>
+            <a href="{% url 'notifications' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-bell w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Alerts</span>
+            </a>
+            <a href="{% url 'inbox' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-envelope w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Messages</span>
             </a>
             {% elif user.role == 'EMPLOYER' %}
-            <a href="{% url 'employer_dashboard' %}" class="nav-dock-link">
-                <i class="fa-solid fa-briefcase text-lg"></i>
-                <span class="text-[10px] uppercase tracking-widest">Hiring</span>
+            <a href="{% url 'employer_dashboard' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-briefcase w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Dashboard</span>
+            </a>
+            <a href="{% url 'inbox' %}" class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-sky-500 hover:text-white transition-all">
+                <i class="fa-solid fa-envelope w-5"></i>
+                <span class="font-black uppercase tracking-widest text-[11px]">Messages</span>
             </a>
             {% endif %}
         {% endif %}
@@ -186,5 +206,23 @@
         <p class="text-slate-400 text-[11px] mt-1 uppercase tracking-widest font-medium">Built for the future of work</p>
     </footer>
 
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

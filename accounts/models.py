@@ -43,23 +43,28 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(unique=True)
     role = models.CharField(
-        max_length=20,
-        choices=ROLE_CHOICES,
+        max_length=20, 
+        choices=ROLE_CHOICES, 
         default='JOB_SEEKER'
     )
     is_role_confirmed = models.BooleanField(default=False)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
     date_joined = models.DateTimeField(default=timezone.now)
 
     objects = UserManager()
 
-    # CRITICAL FOR ALLAUTH PASSWORD RESET
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    @property
+    def username(self):
+        return self.email
+
+    @username.setter
+    def username(self, value):
+        return None
 
     def __str__(self):
         return self.email
