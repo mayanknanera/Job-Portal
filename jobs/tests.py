@@ -50,8 +50,8 @@ class JobModelTests(TestCase):
             employer=employer_profile,
             location="Remote",
             experience_required=2,
-            salary="80k-100k",
-            description="Mission-critical backend development."
+            description="Mission-critical backend development.",
+            skills_required="Python, Django"
         )
 
         self.assertEqual(job.title, "Django Developer")
@@ -70,7 +70,11 @@ class JobApplicationTests(TestCase):
 
         job = Job.objects.create(
             title="Backend Developer",
-            employer=employer_profile
+            employer=employer_profile,
+            location="Remote",
+            experience_required=1,
+            description="Build APIs",
+            skills_required="Python"
         )
 
         resume = SimpleUploadedFile(
@@ -104,7 +108,11 @@ class ResumeAccessTests(TestCase):
 
         job = Job.objects.create(
             title="Python Dev",
-            employer=employer_profile
+            employer=employer_profile,
+            location="Remote",
+            experience_required=1,
+            description="Build things",
+            skills_required="Python"
         )
 
         resume = SimpleUploadedFile(

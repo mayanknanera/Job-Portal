@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Job, JobApplication, JobCategory, Industry, SavedJob, EmailNotification, Message, MessageThread
+from .models import Job, JobApplication, JobCategory, Industry, SavedJob
 
 @admin.register(JobCategory)
 class JobCategoryAdmin(admin.ModelAdmin):
@@ -65,52 +65,3 @@ class SavedJobAdmin(admin.ModelAdmin):
     list_filter = ['saved_at']
     search_fields = ['job_seeker__full_name', 'job__title']
     readonly_fields = ['saved_at']
-
-@admin.register(EmailNotification)
-class EmailNotificationAdmin(admin.ModelAdmin):
-    list_display = ['recipient', 'notification_type', 'job_application', 'is_read', 'created_at']
-    list_filter = ['notification_type', 'is_read', 'created_at']
-    search_fields = ['recipient__email', 'message']
-    readonly_fields = ['created_at']
-    
-    fieldsets = (
-        ('Notification Details', {
-            'fields': ('recipient', 'notification_type', 'job_application', 'is_read')
-        }),
-        ('Message Content', {
-            'fields': ('message',)
-        }),
-        ('Timestamps', {
-            'fields': ('created_at',)
-        })
-    )
-
-@admin.register(MessageThread)
-class MessageThreadAdmin(admin.ModelAdmin):
-    list_display = ['subject', 'job_application', 'created_at', 'updated_at']
-    list_filter = ['created_at', 'updated_at']
-    search_fields = ['subject']
-    readonly_fields = ['created_at', 'updated_at']
-    filter_horizontal = ['participants']
-
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ['sender', 'recipient', 'subject', 'is_read', 'created_at']
-    list_filter = ['is_read', 'created_at']
-    search_fields = ['sender__email', 'recipient__email', 'subject', 'content']
-    readonly_fields = ['created_at']
-    
-    fieldsets = (
-        ('Message Details', {
-            'fields': ('sender', 'recipient', 'subject', 'is_read')
-        }),
-        ('Message Content', {
-            'fields': ('content',)
-        }),
-        ('Related Objects', {
-            'fields': ('job_application', 'message_thread')
-        }),
-        ('Timestamps', {
-            'fields': ('created_at',)
-        })
-    )

@@ -1,158 +1,663 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Career Plus - The Future of Work{% endblock %}
+{% block title %}CareerPlus — Find Your Dream Job{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* ── Hero mesh background ── */
+    .hero-mesh {
+        background-color: #0a0814;
+        background-image:
+            radial-gradient(ellipse 80% 60% at 20% -10%, rgba(147, 51, 234, 0.25) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at 80% 110%, rgba(6, 182, 212, 0.2) 0%, transparent 55%),
+            radial-gradient(ellipse 40% 40% at 50% 50%, rgba(251, 113, 133, 0.08) 0%, transparent 70%);
+    }
+
+    /* ── Glowing search bar ── */
+    .search-glow:focus-within {
+        box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.35), 0 20px 60px rgba(168, 85, 247, 0.12);
+    }
+
+    /* ── Stat counter ── */
+    .stat-card {
+        position: relative;
+        padding: 20px 28px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.04), transparent);
+    }
+
+    /* ── Feature icon ── */
+    .feature-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        position: relative;
+    }
+
+    .feature-icon::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        opacity: 0.4;
+        filter: blur(12px);
+    }
+
+    /* ── Job card ── */
+    .job-card {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        overflow: hidden;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .job-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0), transparent);
+        transition: background 0.35s;
+    }
+
+    .job-card:hover {
+        border-color: rgba(168, 85, 247, 0.3);
+        box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.1), 0 24px 48px rgba(0,0,0,0.35), 0 0 60px rgba(168, 85, 247, 0.06);
+        transform: translateY(-3px);
+    }
+
+    .job-card:hover::before {
+        background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
+    }
+
+    /* Company logo placeholder */
+    .company-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    /* Gradient accent line */
+    .accent-line {
+        height: 3px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #9333ea, #06b6d4);
+        width: 40px;
+        display: block;
+    }
+
+    /* Hero badge pill */
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px 6px 6px;
+        border-radius: 100px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.8rem;
+        color: #b5b0c8;
+        margin-bottom: 32px;
+    }
+
+    .hero-pill-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 100px;
+        background: linear-gradient(135deg, #9333ea, #22d3ee);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+    }
+
+    /* Grid background pattern */
+    .grid-bg {
+        background-image:
+            linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+
+    /* Animated rings */
+    @keyframes ping-slow {
+        0% { transform: scale(1); opacity: 0.4; }
+        100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    .ring-ping {
+        animation: ping-slow 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    /* Scroll section reveal */
+    .section-reveal {
+        opacity: 0;
+        transform: translateY(32px);
+        transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .section-reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* CTA section */
+    .cta-section {
+        background:
+            radial-gradient(ellipse 70% 80% at 50% 0%, rgba(147, 51, 234, 0.2) 0%, transparent 60%),
+            #0a0814;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Floating orbs animation */
+    @keyframes driftA {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -20px) scale(1.05); }
+        66% { transform: translate(-20px, 15px) scale(0.97); }
+    }
+
+    @keyframes driftB {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(-25px, 20px) scale(1.03); }
+        66% { transform: translate(20px, -15px) scale(0.98); }
+    }
+
+    .orb-a { animation: driftA 12s ease-in-out infinite; }
+    .orb-b { animation: driftB 15s ease-in-out infinite; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="relative overflow-hidden">
-    <div class="absolute top-20 -left-20 w-72 h-72 bg-sky-200/30 rounded-full blur-[100px] -z-10"></div>
-    <div class="absolute top-40 -right-20 w-96 h-96 bg-indigo-200/20 rounded-full blur-[120px] -z-10"></div>
 
-    <section class="pt-16 pb-24 text-center space-y-6 relative z-10">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 border border-slate-200 backdrop-blur-md mb-2 animate-bounce-slow">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-            </span>
-            <span class="text-[10px] font-black text-sky-600 tracking-[0.2em] uppercase">Era of Intelligence 2026</span>
-        </div>
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero-mesh grid-bg relative overflow-hidden min-h-[92vh] flex items-center">
 
-        <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter text-slate-900 font-brand leading-[0.85]">
-            Find your <br />
-            <span class="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-blue-600 to-indigo-600">Masterpiece</span>
-        </h1>
+    <!-- Floating orbs -->
+    <div class="orb-a absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle, rgba(147,51,234,0.18) 0%, transparent 70%); filter:blur(40px);"></div>
+    <div class="orb-b absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%); filter:blur(40px);"></div>
 
-        <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium px-4">
-            The platform where high-growth companies meet <br class="hidden md:block" /> 
-            the next generation of technical visionaries.
-        </p>
-    </section>
+    <!-- Subtle grid lines far back -->
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(ellipse at center, transparent 40%, #0a0814 100%);"></div>
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+    <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div class="max-w-4xl mx-auto text-center">
 
-        <div class="md:col-span-4 glass rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden group border border-white/50">
-            <div class="absolute inset-0 bg-linear-to-tr from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-            
-            <div class="relative z-10 max-w-4xl mx-auto">
-                <div class="text-center mb-10">
-                    <h3 class="text-2xl font-bold text-slate-900 font-brand mb-2">Global Opportunity Search</h3>
-                    <p class="text-sm text-slate-400 uppercase tracking-widest font-bold">450k+ Live Positions</p>
+            <!-- Eyebrow pill -->
+            <div class="flex justify-center" data-reveal>
+                <div class="hero-pill">
+                    <div class="hero-pill-dot">✦</div>
+                    <span>The modern job platform for 2026</span>
+                    <span class="text-gradient font-semibold">New: AI Matching →</span>
                 </div>
+            </div>
 
-                <form action="{% url 'job_list' %}" method="GET" class="flex flex-col md:flex-row gap-4">
-                    <div class="flex-1 relative">
-                        <i class="fas fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" name="keyword" placeholder="Design, AI, Frontend..."
-                            class="w-full h-16 pl-14 pr-6 bg-white rounded-2xl border-none focus:ring-2 focus:ring-sky-500/20 text-slate-900 placeholder-slate-400 shadow-sm text-lg transition-all outline-none">
+            <!-- Headline -->
+            <h1 class="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[0.95] mb-6" data-reveal>
+                Land Your<br>
+                <span class="text-gradient relative inline-block mt-1">
+                    Dream Role
+                    <svg class="absolute -bottom-1 left-0 w-full h-2" viewBox="0 0 400 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 4 Q100 0 200 4 Q300 8 400 4" stroke="url(#underline-grad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <defs>
+                            <linearGradient id="underline-grad" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#9333ea"/>
+                                <stop offset="100%" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-ink-300 leading-relaxed max-w-2xl mx-auto mb-12" data-reveal>
+                Connect with forward-thinking companies. Discover opportunities that align with your skills, ambitions, and the life you want to build.
+            </p>
+
+            <!-- Search Box -->
+            <div class="glass search-glow rounded-2xl p-2 sm:p-3 max-w-3xl mx-auto mb-16 transition-all" data-reveal>
+                <form action="{% url 'job_list' %}" method="GET">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input
+                                type="text" name="keyword"
+                                placeholder="Role, skill, or keyword..."
+                                class="input-dark pl-11"
+                                style="background:transparent; border-color:transparent;">
+                        </div>
+                        <div class="relative flex-1">
+                            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <input
+                                type="text" name="location"
+                                placeholder="City, country, or remote"
+                                class="input-dark pl-11"
+                                style="background:transparent; border-color:transparent;">
+                        </div>
+                        <button type="submit" class="btn-primary px-7 py-3 flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Search
+                        </button>
                     </div>
-
-                    <div class="flex-1 relative">
-                        <i class="fas fa-location-dot absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" name="location" placeholder="Remote or City"
-                            class="w-full h-16 pl-14 pr-6 bg-white rounded-2xl border-none focus:ring-2 focus:ring-sky-500/20 text-slate-900 placeholder-slate-400 shadow-sm text-lg transition-all outline-none">
-                    </div>
-
-                    <button type="submit"
-                        class="h-16 px-10 bg-slate-900 text-white font-bold rounded-2xl hover:bg-sky-600 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-slate-200">
-                        Launch Search
-                    </button>
                 </form>
             </div>
-        </div>
 
-        <div class="md:col-span-2 glass rounded-[2.5rem] p-10 flex flex-col justify-between relative overflow-hidden group min-h-[280px]">
-            <div class="absolute top-0 right-0 p-8">
-                <div class="w-12 h-12 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-lg shadow-sky-200">
-                    <i class="fa-solid fa-bolt-lightning"></i>
+            <!-- Popular searches -->
+            <div class="flex flex-wrap items-center justify-center gap-2 mb-16" data-reveal>
+                <span class="text-xs text-ink-500 font-medium uppercase tracking-wider mr-1">Trending:</span>
+                <a href="{% url 'job_list' %}?keyword=Product Designer"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">Product Designer</a>
+                <a href="{% url 'job_list' %}?keyword=Frontend Dev"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">Frontend Dev</a>
+                <a href="{% url 'job_list' %}?keyword=Data Analyst"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">Data Analyst</a>
+                <a href="{% url 'job_list' %}?keyword=UX Research"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">UX Research</a>
+                <a href="{% url 'job_list' %}?keyword=Backend Eng"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">Backend Eng</a>
+                <a href="{% url 'job_list' %}?keyword=DevOps"
+                   class="badge badge-violet hover:border-violet-400 transition-colors cursor-pointer text-[11px]">DevOps</a>
+            </div>
+
+            <!-- Stats row -->
+            <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto" data-reveal>
+                <div class="stat-card">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading text-white mb-0.5">1.2K+</div>
+                    <div class="text-xs text-ink-400 font-medium uppercase tracking-wider">Active Jobs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading text-white mb-0.5">450+</div>
+                    <div class="text-xs text-ink-400 font-medium uppercase tracking-wider">Companies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl sm:text-4xl font-extrabold font-heading text-white mb-0.5">
+                        <span class="text-acid">85</span>
+                    </div>
+                    <div class="text-xs text-ink-400 font-medium uppercase tracking-wider">Posted Today</div>
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+         style="background:linear-gradient(transparent, #0a0814);"></div>
+</section>
+
+
+<!-- ═══════════════════ FEATURES ═══════════════════ -->
+<section class="py-28 relative" style="background:#0a0814;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Section header -->
+        <div class="text-center mb-16 section-reveal">
+            <span class="accent-line mx-auto mb-5"></span>
+            <h2 class="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+                Built for how you work
+                <span class="text-gradient"> in 2026</span>
+            </h2>
+            <p class="text-ink-400 max-w-xl mx-auto text-lg">
+                A platform designed around speed, clarity, and getting you hired faster.
+            </p>
+        </div>
+
+        <!-- Feature grid -->
+        <div class="grid md:grid-cols-3 gap-6 stagger">
+
+            <!-- Feature 1 -->
+            <div class="glass-card rounded-2xl p-8 section-reveal">
+                <div class="feature-icon" style="background:rgba(147,51,234,0.12);">
+                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="font-heading text-xl font-bold text-white mb-3">Instant Apply</h3>
+                <p class="text-ink-400 text-sm leading-relaxed">Apply to multiple positions in seconds. No repetitive forms — your profile does the talking.</p>
+                <div class="mt-6 flex items-center gap-2 text-violet-400 text-sm font-semibold">
+                    <span>Learn more</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="glass-card rounded-2xl p-8 section-reveal" style="border-color:rgba(168,85,247,0.18); background:rgba(147,51,234,0.04);">
+                <!-- "Featured" badge -->
+                <div class="flex items-center justify-between mb-2">
+                    <div class="feature-icon" style="background:rgba(168,85,247,0.15); margin-bottom:0;">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+                        </svg>
+                    </div>
+                    <span class="badge badge-violet">Popular</span>
+                </div>
+                <h3 class="font-heading text-xl font-bold text-white mb-3 mt-4">Smart Dashboard</h3>
+                <p class="text-ink-400 text-sm leading-relaxed">Track every application in real-time. Know exactly where you stand with each company at a glance.</p>
+                <div class="mt-6 flex items-center gap-2 text-violet-400 text-sm font-semibold">
+                    <span>Learn more</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="glass-card rounded-2xl p-8 section-reveal">
+                <div class="feature-icon" style="background:rgba(6,182,212,0.1);">
+                    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <h3 class="font-heading text-xl font-bold text-white mb-3">Verified Listings</h3>
+                <p class="text-ink-400 text-sm leading-relaxed">Every job posting is verified. No ghost jobs, no fake recruiters — only real opportunities worth your time.</p>
+                <div class="mt-6 flex items-center gap-2 text-cyan-400 text-sm font-semibold">
+                    <span>Learn more</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══════════════════ JOB LISTINGS ═══════════════════ -->
+<section class="py-28 relative"
+         style="background:radial-gradient(ellipse 100% 60% at 50% 0%, rgba(147,51,234,0.07) 0%, transparent 60%), #080612;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Section header -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12 section-reveal">
             <div>
-                <h3 class="text-6xl font-black text-slate-900 font-brand mb-2 tracking-tighter">12.4k</h3>
-                <p class="text-sky-600 font-bold uppercase tracking-widest text-xs">New Jobs This Week</p>
+                <span class="accent-line mb-4"></span>
+                <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white">
+                    Latest <span class="text-gradient">Opportunities</span>
+                </h2>
+                <p class="text-ink-400 mt-2">Fresh roles from companies hiring right now</p>
             </div>
+            <a href="{% url 'job_list' %}" class="btn-ghost self-start sm:self-auto flex-shrink-0">
+                View all jobs
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
 
-            <div class="mt-8 flex items-center gap-4">
-                <div class="flex -space-x-3">
-                    <img src="https://i.pravatar.cc/100?u=1" class="w-10 h-10 rounded-full border-4 border-white">
-                    <img src="https://i.pravatar.cc/100?u=2" class="w-10 h-10 rounded-full border-4 border-white">
-                    <img src="https://i.pravatar.cc/100?u=3" class="w-10 h-10 rounded-full border-4 border-white">
-                    <div class="w-10 h-10 rounded-full bg-slate-900 border-4 border-white flex items-center justify-center text-[10px] text-white font-bold">+5k</div>
+        <!-- Job cards grid -->
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 stagger">
+            {% for job in latest_jobs %}
+            <div class="job-card section-reveal">
+
+                <!-- Card top -->
+                <div class="p-6 pb-4">
+                    <div class="flex items-start gap-4">
+                        <!-- Company logo -->
+                        <div class="company-logo flex-shrink-0"
+                             style="background:linear-gradient(135deg,
+                                {% cycle 'rgba(147,51,234,0.2)' 'rgba(6,182,212,0.2)' 'rgba(251,113,133,0.2)' 'rgba(200,255,0,0.15)' %}
+                                ,
+                                {% cycle 'rgba(147,51,234,0.08)' 'rgba(6,182,212,0.08)' 'rgba(251,113,133,0.08)' 'rgba(200,255,0,0.06)' %}
+                             ); border:1px solid rgba(255,255,255,0.07);">
+                            <span style="background:linear-gradient(135deg, {% cycle '#c084fc' '#22d3ee' '#fb7185' '#c8ff00' %}, {% cycle '#a855f7' '#06b6d4' '#f43f5e' '#a3e635' %}); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+                                {{ job.employer.company_name|slice:":1"|default:"C"|upper }}
+                            </span>
+                        </div>
+
+                        <!-- Title and company -->
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-heading text-base font-bold text-white mb-0.5 truncate">{{ job.title }}</h3>
+                            <p class="text-sm text-ink-400">{{ job.employer.company_name }}</p>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-400 font-medium">Joined by world-class talent</p>
-            </div>
-        </div>
 
-        <div class="md:col-span-2 bg-slate-900 rounded-[2.5rem] p-10 flex flex-col justify-between relative overflow-hidden group min-h-[280px]">
-            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-sky-500/20 blur-[60px] rounded-full"></div>
-            
-            <div class="relative z-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/10 text-sky-400 text-[10px] font-bold uppercase tracking-widest mb-4">
-                    <i class="fa-solid fa-sparkles"></i> AI Engine Active
+                <!-- Divider -->
+                <div class="divider mx-6"></div>
+
+                <!-- Card body -->
+                <div class="p-6 pt-4 flex flex-col flex-grow">
+                    <!-- Badges -->
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="badge badge-green">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                            {{ job.get_job_type_display }}
+                        </span>
+                        <span class="badge badge-cyan">{{ job.get_work_location_type_display }}</span>
+                    </div>
+
+                    <!-- Description snippet -->
+                    <p class="text-ink-400 text-sm leading-relaxed line-clamp-2 mb-5 flex-grow">
+                        {{ job.description|striptags|truncatewords:18 }}
+                    </p>
+
+                    <!-- Meta row -->
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="flex items-center gap-1.5 text-xs text-ink-500">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>{{ job.location }}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-ink-500">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>{{ job.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+
+                    <!-- Salary + CTA row -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-ink-500 block mb-0.5">Salary</span>
+                            <span class="text-sm font-bold text-white">
+                                {% if job.salary_display %}{{ job.salary_display }}{% else %}Competitive{% endif %}
+                            </span>
+                        </div>
+                        <a href="{% url 'job_detail' job.slug %}"
+                           class="btn-primary text-xs py-2.5 px-5">
+                            View role
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <h3 class="text-3xl font-bold text-white font-brand mb-3">Smart Match™</h3>
-                <p class="text-slate-400 text-sm leading-relaxed max-w-xs">Our 2026 neural engine matches your unique GitHub and Portfolio fingerprints to perfect roles.</p>
             </div>
-
-            <div class="relative z-10 w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                <div class="w-3/4 h-full bg-linear-to-r from-sky-400 to-blue-600"></div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center">
+                <div class="glass-card rounded-2xl p-16 max-w-md mx-auto">
+                    <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                         style="background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.2);">
+                        <svg class="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">No Listings Yet</h3>
+                    <p class="text-ink-400 text-sm">Check back soon — great opportunities are on the way.</p>
+                </div>
             </div>
+            {% endfor %}
         </div>
 
-        {% widthratio 1 1 1 as tech_count %}
-        <div class="md:col-span-1 glass rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:shadow-xl transition-all cursor-pointer group border border-transparent hover:border-sky-200">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl mb-4 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                <i class="fa-solid fa-code"></i>
-            </div>
-            <span class="font-extrabold text-slate-900 tracking-tight">Software</span>
+    </div>
+</section>
+
+
+<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
+<section class="py-28" style="background:#0a0814;">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-16 section-reveal">
+            <span class="accent-line mx-auto mb-5"></span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
+                How it <span class="text-gradient">works</span>
+            </h2>
+            <p class="text-ink-400">Three steps to your next career move</p>
         </div>
 
-        <div class="md:col-span-1 glass rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:shadow-xl transition-all cursor-pointer group border border-transparent hover:border-sky-200">
-            <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-2xl mb-4 group-hover:bg-rose-500 group-hover:text-white transition-all">
-                <i class="fa-solid fa-bezier-curve"></i>
+        <div class="grid md:grid-cols-3 gap-6 relative">
+
+            <!-- Connector line (desktop) -->
+            <div class="hidden md:block absolute top-10 left-1/3 right-1/3 h-px"
+                 style="background:linear-gradient(90deg, rgba(147,51,234,0.4), rgba(6,182,212,0.4));"></div>
+
+            <!-- Step 1 -->
+            <div class="text-center section-reveal">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center relative"
+                     style="background:rgba(147,51,234,0.1); border:1px solid rgba(147,51,234,0.2);">
+                    <span class="font-heading text-3xl font-extrabold text-gradient">01</span>
+                </div>
+                <h3 class="font-heading text-lg font-bold text-white mb-2">Create Profile</h3>
+                <p class="text-ink-400 text-sm">Set up your profile once with your skills, experience, and preferences.</p>
             </div>
-            <span class="font-extrabold text-slate-900 tracking-tight">Design</span>
+
+            <!-- Step 2 -->
+            <div class="text-center section-reveal">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                     style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);">
+                    <span class="font-heading text-3xl font-extrabold text-gradient">02</span>
+                </div>
+                <h3 class="font-heading text-lg font-bold text-white mb-2">Discover Roles</h3>
+                <p class="text-ink-400 text-sm">Browse curated listings or let our smart matching surface the best fits.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center section-reveal">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                     style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2);">
+                    <span class="font-heading text-3xl font-extrabold text-gradient">03</span>
+                </div>
+                <h3 class="font-heading text-lg font-bold text-white mb-2">Apply & Track</h3>
+                <p class="text-ink-400 text-sm">Apply instantly and track every application from a single dashboard.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section class="cta-section py-28 relative overflow-hidden">
+
+    <!-- Glow orb -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full pointer-events-none"
+         style="background:radial-gradient(ellipse, rgba(147,51,234,0.15) 0%, transparent 70%); filter:blur(40px);"></div>
+
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+        <div class="section-reveal">
+            <span class="badge badge-violet mb-6 mx-auto">Join 50,000+ professionals</span>
         </div>
 
-        <div class="md:col-span-1 glass rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:shadow-xl transition-all cursor-pointer group border border-transparent hover:border-sky-200">
-            <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl mb-4 group-hover:bg-amber-500 group-hover:text-white transition-all">
-                <i class="fa-solid fa-robot"></i>
-            </div>
-            <span class="font-extrabold text-slate-900 tracking-tight">AI & ML</span>
+        <h2 class="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight section-reveal">
+            Ready to write your<br>
+            <span class="text-gradient">next chapter?</span>
+        </h2>
+
+        <p class="text-lg text-ink-300 mb-10 max-w-xl mx-auto section-reveal">
+            Thousands of professionals have found their dream roles through CareerPlus. It's free to start.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 section-reveal">
+            <a href="{% url 'signup' %}" class="btn-primary px-8 py-3.5 text-base">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+                Create free account
+            </a>
+            <a href="{% url 'job_list' %}" class="btn-ghost px-8 py-3.5 text-base">
+                Explore jobs
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
         </div>
 
-        <div class="md:col-span-1 glass rounded-3xl p-8 flex flex-col items-center justify-center text-center hover:shadow-xl transition-all cursor-pointer group border border-transparent hover:border-sky-200">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-2xl mb-4 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                <i class="fa-solid fa-globe"></i>
+        <!-- Trust row -->
+        <div class="mt-12 flex flex-wrap items-center justify-center gap-6 section-reveal">
+            <div class="flex items-center gap-2 text-sm text-ink-500">
+                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Free to join
             </div>
-            <span class="font-extrabold text-slate-900 tracking-tight">Product</span>
-        </div>
-
-        <div class="md:col-span-4 glass rounded-[2.5rem] p-10 md:p-14 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-sky-100">
-            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-400/10 rounded-full blur-[100px]"></div>
-
-            <div class="relative z-10 text-center md:text-left">
-                <h3 class="text-4xl font-black text-slate-900 font-brand mb-3">Ready to build the future?</h3>
-                <p class="text-slate-500 font-medium">Join 50,000+ creators building world-changing products.</p>
+            <div class="flex items-center gap-2 text-sm text-ink-500">
+                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                No spam, ever
             </div>
-
-            <div class="relative z-10">
-                <a href="{% url 'signup' %}"
-                    class="px-12 py-5 bg-sky-500 text-white font-black rounded-2xl hover:bg-sky-600 transition-all shadow-xl shadow-sky-200 uppercase tracking-widest text-sm">
-                    Create Profile
-                </a>
+            <div class="flex items-center gap-2 text-sm text-ink-500">
+                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Verified listings only
             </div>
         </div>
 
     </div>
-</div>
+</section>
 
-<style>
-    @keyframes bounce-slow {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-    .animate-bounce-slow {
-        animation: bounce-slow 4s infinite ease-in-out;
-    }
-</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Section reveal on scroll
+    const reveals = document.querySelectorAll('.section-reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                // Add delay based on sibling index
+                const siblings = [...e.target.parentElement.children];
+                const idx = siblings.indexOf(e.target);
+                e.target.style.transitionDelay = `${idx * 70}ms`;
+                e.target.classList.add('visible');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08 });
+
+    reveals.forEach(el => revealObs.observe(el));
+
+    // Hero data-reveal stagger
+    document.querySelectorAll('[data-reveal]').forEach((el, i) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 120}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 120}ms`;
+        // Trigger after tiny delay for paint
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 80);
+        });
+    });
+</script>
 {% endblock %}

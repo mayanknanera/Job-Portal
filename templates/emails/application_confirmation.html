@@ -1,0 +1,41 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}Application Submitted - {{ job_title }}{% endblock %}
+
+{% block content %}
+<h1>Application Submitted Successfully! ✅</h1>
+
+<p>Hi {{ applicant_name }},</p>
+
+<p>Your application for the position of <strong style="color: #c084fc;">{{ job_title }}</strong> at <strong>{{ company_name }}</strong> has been successfully submitted.</p>
+
+<div class="info-box">
+    <strong>Application Details:</strong>
+    <ul style="margin: 10px 0; padding-left: 20px; list-style: none;">
+        <li>📋 <strong>Position:</strong> {{ job_title }}</li>
+        <li>🏢 <strong>Company:</strong> {{ company_name }}</li>
+        <li>📍 <strong>Location:</strong> {{ job_location }}</li>
+        <li>📅 <strong>Applied on:</strong> {{ applied_date }}</li>
+        <li>📊 <strong>Status:</strong> <span style="color: #fbbf24;">Pending Review</span></li>
+    </ul>
+</div>
+
+<p>The employer will review your application and get back to you soon. We'll notify you via email when there's an update on your application status.</p>
+
+<div style="text-align: center;">
+    <a href="{{ job_url }}" class="btn">View Job Details</a>
+</div>
+
+<div class="divider"></div>
+
+<p style="font-size: 14px; color: #756797;">
+    <strong>What happens next?</strong><br>
+    • The employer reviews your application<br>
+    • You'll receive an email if your application status changes<br>
+    • Track all your applications in your dashboard
+</p>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{{ dashboard_url }}" style="color: #22d3ee; text-decoration: none;">View All Applications →</a>
+</div>
+{% endblock %}

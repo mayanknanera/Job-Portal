@@ -1,0 +1,39 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}Welcome to CareerPlus!{% endblock %}
+
+{% block content %}
+<h1>Welcome to CareerPlus, {{ user_name }}! 🎉</h1>
+
+<p>We're thrilled to have you join our community of job seekers and employers.</p>
+
+<p>Your account has been successfully created as a <strong style="color: #c084fc;">{{ user_role }}</strong>.</p>
+
+<div class="info-box">
+    <strong>What's next?</strong>
+    <ul style="margin: 10px 0; padding-left: 20px;">
+        {% if user_role == "Job Seeker" %}
+        <li>Complete your profile with skills and experience</li>
+        <li>Upload your resume</li>
+        <li>Browse thousands of job opportunities</li>
+        <li>Apply to jobs that match your skills</li>
+        <li>Chat with our AI Career Assistant</li>
+        {% else %}
+        <li>Complete your company profile</li>
+        <li>Post your first job opening</li>
+        <li>Review incoming applications</li>
+        <li>Find the perfect candidates</li>
+        {% endif %}
+    </ul>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ dashboard_url }}" class="btn">Go to Dashboard</a>
+</div>
+
+<div class="divider"></div>
+
+<p style="font-size: 14px; color: #756797;">
+    Need help getting started? Check out our <a href="{{ site_url }}/help" style="color: #22d3ee;">Help Center</a> or reply to this email.
+</p>
+{% endblock %}

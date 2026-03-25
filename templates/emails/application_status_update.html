@@ -1,0 +1,54 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}Application Status Update - {{ job_title }}{% endblock %}
+
+{% block content %}
+<h1>Application Status Updated {% if status == "ACCEPTED" %}🎉{% elif status == "REJECTED" %}{% else %}📋{% endif %}</h1>
+
+<p>Hi {{ applicant_name }},</p>
+
+<p>There's an update on your application for <strong style="color: #c084fc;">{{ job_title }}</strong> at <strong>{{ company_name }}</strong>.</p>
+
+<div class="info-box" style="{% if status == 'ACCEPTED' %}border-left-color: #4ade80; background: rgba(74,222,128,0.1);{% elif status == 'REJECTED' %}border-left-color: #fb7185; background: rgba(251,113,133,0.1);{% endif %}">
+    <strong>New Status:</strong>
+    <p style="font-size: 20px; margin: 10px 0; color: {% if status == 'ACCEPTED' %}#4ade80{% elif status == 'REJECTED' %}#fb7185{% else %}#fbbf24{% endif %};">
+        {% if status == "ACCEPTED" %}
+            ✅ Accepted
+        {% elif status == "REJECTED" %}
+            ❌ Rejected
+        {% else %}
+            ⏳ {{ status }}
+        {% endif %}
+    </p>
+</div>
+
+{% if status == "ACCEPTED" %}
+<p>Congratulations! The employer is interested in your profile. They will contact you soon for the next steps in the hiring process.</p>
+
+<div style="background: rgba(74,222,128,0.05); padding: 15px; border-radius: 8px; margin: 20px 0;">
+    <strong style="color: #4ade80;">💡 Next Steps:</strong>
+    <ul style="margin: 10px 0; padding-left: 20px;">
+        <li>Keep your phone and email accessible</li>
+        <li>Prepare for potential interviews</li>
+        <li>Review the job description again</li>
+        <li>Research about the company</li>
+    </ul>
+</div>
+
+{% elif status == "REJECTED" %}
+<p>Unfortunately, the employer has decided to move forward with other candidates for this position.</p>
+
+<p style="color: #b5b0c8;">Don't be discouraged! Keep applying and improving your profile. The right opportunity is waiting for you.</p>
+
+<div style="text-align: center; margin: 25px 0;">
+    <a href="{{ browse_jobs_url }}" class="btn">Browse More Jobs</a>
+</div>
+
+{% endif %}
+
+<div class="divider"></div>
+
+<div style="text-align: center;">
+    <a href="{{ dashboard_url }}" style="color: #22d3ee; text-decoration: none; font-weight: 600;">View Application Details →</a>
+</div>
+{% endblock %}

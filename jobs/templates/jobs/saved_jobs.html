@@ -1,149 +1,187 @@
 {% extends "base.html" %}
 
-{% block title %}Saved Jobs | Career Plus{% endblock %}
-
-{% block breadcrumb %}
-<li class="flex items-center gap-2">
-    <i class="fa-solid fa-chevron-right text-[8px]"></i>
-    <span class="text-sky-600 font-bold uppercase tracking-widest text-[10px]">Saved Jobs</span>
-</li>
-{% endblock %}
+{% block title %}Saved Jobs - CareerPlus{% endblock %}
 
 {% block content %}
-<div class="mb-10">
-    <h1 class="text-4xl md:text-5xl font-black font-brand text-slate-900 tracking-tight leading-none">
-        Your <span class="text-transparent bg-clip-text bg-linear-to-r from-amber-500 to-orange-600">Saved</span> Jobs
-    </h1>
-    <p class="text-slate-400 mt-3 text-lg font-medium">Jobs you've bookmarked for later review.</p>
-</div>
-
-<div class="space-y-8">
-    {% for saved_job in page_obj %}
-    <div class="glass p-8 md:p-10 rounded-4xl border border-white hover:border-amber-200 transition-all group relative overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-100 hover:-translate-y-1">
-        <div class="absolute top-4 right-4">
-            <button 
-               onclick="toggleSaveJob('{{ saved_job.job.id }}')"
-                class="save-job-btn text-amber-500 hover:text-amber-600 transition-colors p-2"
-                data-job-id="{{ saved_job.job.id }}">
-                <i class="fa-solid fa-bookmark text-xl"></i>
-            </button>
-        </div>
-
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div class="flex-1">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-inner">
-                        <i class="fa-solid fa-terminal"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">
-                            <a href="{% url 'job_detail' saved_job.job.slug %}" class="hover:text-sky-600 transition-colors">
-                                {{ saved_job.job.title }}
-                            </a>
-                        </h3>
-                        <p class="text-sm text-slate-500 font-medium">{{ saved_job.job.employer.company_name }}</p>
-                    </div>
+<div class="min-h-screen" style="background:#0a0814;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- Page Header -->
+        <div class="mb-10 animate-slide-up">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-ink-500 mb-1">Your Collection</p>
+                    <h1 class="font-heading text-3xl sm:text-4xl font-extrabold text-white">
+                        Saved <span class="text-gradient">Jobs</span>
+                    </h1>
+                    <p class="mt-2 text-ink-400">Roles you've bookmarked for later</p>
                 </div>
-
-                <div class="flex flex-wrap gap-3 mb-4">
-                    <span class="flex items-center gap-2 text-xs text-slate-500">
-                        <i class="fa-solid fa-location-dot text-sky-400"></i> {{ saved_job.job.location }}
-                    </span>
-                    <span class="flex items-center gap-2 text-xs text-slate-500">
-                        <i class="fa-solid fa-bolt text-amber-400"></i> {{ saved_job.job.experience_required|default:"0" }}yr Exp
-                    </span>
-                    {% if saved_job.job.salary_display %}
-                    <span class="flex items-center gap-2 text-xs text-slate-500">
-                        <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> {{ saved_job.job.salary_display }}
-                    </span>
-                    {% endif %}
-                </div>
-
-                <p class="text-slate-400 text-sm leading-relaxed max-w-2xl line-clamp-2 font-medium">
-                    {{ saved_job.job.description|truncatewords:30 }}
-                </p>
-            </div>
-
-            <div class="flex flex-col gap-3">
-                <a href="{% url 'job_detail' saved_job.job.slug %}" 
-                   class="px-6 py-3 bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-sky-600 transition-all text-center">
-                    View Details
+                
+                <a href="{% url 'job_list' %}" class="btn-primary text-sm py-2.5 px-6 flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Browse More
                 </a>
-                {% if saved_job.job.id not in applied_job_ids %}
-                <a href="{% url 'apply_job' saved_job.job.id %}" 
-                   class="px-6 py-3 bg-sky-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-sky-600 transition-all text-center">
-                    Apply Now
-                </a>
-                {% else %}
-                <div class="px-6 py-3 bg-emerald-50 text-emerald-600 font-black text-xs uppercase tracking-widest rounded-2xl text-center border border-emerald-100">
-                    Applied
-                </div>
-                {% endif %}
             </div>
         </div>
-    </div>
-    {% empty %}
-    <div class="glass p-16 rounded-4xl border border-white text-center">
-        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fa-solid fa-bookmark text-3xl text-slate-300"></i>
+
+        {% if page_obj %}
+        <!-- Saved Jobs Grid -->
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3 animate-slide-up" style="animation-delay:60ms;">
+            {% for saved_job in page_obj %}
+            <div class="glass-card rounded-2xl overflow-hidden transition-all hover:scale-[1.02]" id="saved-{{ saved_job.job.id }}">
+                
+                <!-- Card Header -->
+                <div class="p-6 pb-4">
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                        <!-- Company Logo -->
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0"
+                             style="background:linear-gradient(135deg, rgba(147,51,234,0.2), rgba(6,182,212,0.15)); border:1px solid rgba(255,255,255,0.1);">
+                            <span class="text-gradient">{{ saved_job.job.employer.company_name|slice:":1"|default:"C"|upper }}</span>
+                        </div>
+                        
+                        <!-- Unsave Button -->
+                        <button onclick="removeSavedJob(this, {{ saved_job.job.id }})"
+                                class="text-violet-400 hover:text-rose-400 transition-colors flex-shrink-0 mt-0.5"
+                                title="Remove from saved">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 5a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 19V5z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Job Title & Company -->
+                    <h3 class="font-heading text-lg font-bold text-white mb-1 line-clamp-2">
+                        {{ saved_job.job.title }}
+                    </h3>
+                    <p class="text-sm text-ink-400 mb-4">
+                        {{ saved_job.job.employer.company_name }}
+                    </p>
+
+                    <!-- Badges -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="badge badge-green flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                            {{ saved_job.job.get_job_type_display }}
+                        </span>
+                        {% if saved_job.job.work_location_type %}
+                        <span class="badge badge-cyan">{{ saved_job.job.get_work_location_type_display }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-ink-400 text-sm leading-relaxed line-clamp-2 mb-4">
+                        {{ saved_job.job.description|striptags|truncatewords:20 }}
+                    </p>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider mx-6"></div>
+
+                <!-- Card Footer -->
+                <div class="p-6 pt-4">
+                    <!-- Meta Info -->
+                    <div class="flex items-center gap-4 mb-4 text-xs text-ink-500">
+                        {% if saved_job.job.location %}
+                        <div class="flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            {{ saved_job.job.location }}
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Saved {{ saved_job.saved_at|timesince }} ago
+                        </div>
+                    </div>
+
+                    <!-- Salary & CTA -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-ink-500 block mb-0.5">Salary</span>
+                            <span class="text-sm font-bold text-white">
+                                {% if saved_job.job.salary_display %}{{ saved_job.job.salary_display }}{% else %}Competitive{% endif %}
+                            </span>
+                        </div>
+                        <a href="{% url 'job_detail' saved_job.job.slug %}" class="btn-primary text-xs py-2.5 px-5">
+                            View role
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        <h3 class="text-2xl font-black text-slate-900 font-brand">No Saved Jobs Yet</h3>
-        <p class="text-slate-400 mt-2 font-medium">Start bookmarking jobs that interest you!</p>
-        <a href="{% url 'job_list' %}" class="inline-block mt-8 text-sky-500 font-black uppercase tracking-widest text-[11px] hover:text-sky-600 border-b-2 border-sky-500 pb-1">
-            Browse Jobs
-        </a>
-    </div>
-    {% endfor %}
-</div>
 
-<!-- Pagination -->
-{% if page_obj.has_other_pages %}
-<div class="flex justify-center mt-12 gap-2">
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" 
-           class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-            <i class="fa-solid fa-chevron-left"></i>
-        </a>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-            <span class="px-4 py-2 bg-sky-500 text-white rounded-xl">{{ num }}</span>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <a href="?page={{ num }}" 
-               class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-                {{ num }}
+        <!-- Pagination -->
+        {% include 'includes/pagination.html' %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="glass-card rounded-2xl p-12 text-center max-w-2xl mx-auto animate-slide-up" style="animation-delay:60ms;">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                 style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.2);">
+                <svg class="w-10 h-10 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 19V5z"/>
+                </svg>
+            </div>
+            
+            <h3 class="font-heading text-2xl font-bold text-white mb-3">No Saved Jobs Yet</h3>
+            <p class="text-ink-400 mb-8 max-w-md mx-auto leading-relaxed">
+                Start bookmarking roles that interest you. Click the bookmark icon on any job listing to save it here.
+            </p>
+            
+            <a href="{% url 'job_list' %}" class="btn-primary px-8 py-3 text-base">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                Explore Jobs
             </a>
+        </div>
         {% endif %}
-    {% endfor %}
-
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" 
-           class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">
-            <i class="fa-solid fa-chevron-right"></i>
-        </a>
-    {% endif %}
+    </div>
 </div>
-{% endif %}
-{% endblock %}
 
-{% block extra_js %}
 <script>
-function toggleSaveJob(jobId) {
+function removeSavedJob(btn, jobId) {
+    if (!confirm('Remove this job from saved?')) return;
+    
     fetch(`/jobs/save/${jobId}/`, {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        }
+        headers: { 
+            'X-CSRFToken': '{{ csrf_token }}', 
+            'Content-Type': 'application/json' 
+        },
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.status === 'saved' || data.status === 'unsaved') {
-            location.reload();
+        if (!data.saved) {
+            const card = document.getElementById(`saved-${jobId}`);
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                card.style.transition = 'all 0.3s ease';
+                setTimeout(() => {
+                    card.remove();
+                    // Check if no more cards
+                    const container = card.parentElement;
+                    if (container && container.children.length === 0) {
+                        location.reload();
+                    }
+                }, 300);
+            }
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Failed to remove job. Please try again.');
+    });
 }
 </script>
 {% endblock %}
