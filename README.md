@@ -7,19 +7,17 @@ A full-stack job portal where employers can post jobs and job seekers can apply 
 ## What it does
 
 **For Job Seekers**
-- Sign up, pick a role, complete your profile
-- Browse and filter jobs by keyword, location, skills, salary, job type, and more
-- Save jobs for later, apply with your resume, track application status
+- Browse and filter jobs, save for later, apply with resume
+- Track application status from dashboard
 - AI career assistant for resume tips and interview prep
 
 **For Employers**
 - Post job listings with category, industry, salary, and work type
-- View and manage applicants, accept or reject with one click
-- Dashboard with application analytics and charts
+- View applicants, accept or reject with one click
+- Dashboard with application analytics
 
 **General**
 - Email + Google OAuth login
-- Email notifications (welcome, application confirmation, status updates)
 - Django admin panel for full data management
 
 ---
@@ -37,31 +35,39 @@ A full-stack job portal where employers can post jobs and job seekers can apply 
 ## Quick Start
 
 ```bash
-# 1. Clone
 git clone https://github.com/mayanknanera/Job-Portal.git
 cd Job-Portal
 
-# 2. Virtual environment
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 # source .venv/bin/activate   # macOS / Linux
 
-# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Environment variables
 cp .env.example .env
 # Fill in SECRET_KEY and GROQ_API_KEY in .env
 
-# 5. Database
 python manage.py migrate
 python manage.py createsuperuser
-
-# 6. Run
 python manage.py runserver
 ```
 
 Open `http://127.0.0.1:8000`
+
+---
+
+## Email Notifications
+
+The project sends 4 emails:
+
+| Trigger | Recipient |
+|---|---|
+| New user signs up | Welcome email → user |
+| Job seeker applies | Confirmation → seeker, Alert → employer |
+| Employer accepts/rejects | Status update → seeker |
+
+> **Note:** Emails currently print to the terminal (console backend).
+> To send real emails, update `EMAIL_BACKEND` in `settings.py` with your SMTP credentials.
 
 ---
 
